@@ -1,0 +1,20 @@
+services:
+  bot:
+    build: ./bot
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    volumes:
+      - ./bot/data:/app/data
+
+  dashboard:
+    build:
+      context: ./dashboard
+      args:
+        VITE_API_URL: http://localhost:3003
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - bot

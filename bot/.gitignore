@@ -1,0 +1,6 @@
+.env
+.env.*
+!.env.example
+bot/data/*.db
+bot/data/*.db-shm
+bot/data/*.db-wal
