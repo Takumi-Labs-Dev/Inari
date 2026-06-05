@@ -5,6 +5,7 @@ import Builder from './pages/Builder'
 import Settings from './pages/Settings'
 import Templates from './pages/Templates'
 import Vault from './pages/Vault'
+import ColorPalettes from './pages/ColorPalettes'
 
 const Stub = ({ name }) => (
   <div className="flex items-center justify-center h-full">
@@ -22,7 +23,7 @@ export default function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="templates" element={<Templates />} />
           <Route path="vault" element={<Vault />} />
-          <Route path="color" element={<Stub name="Color Palettes" />} />
+          <Route path="color" element={<ColorPalettes />} />
           <Route path="history" element={<Stub name="History" />} />
         </Route>
       </Routes>
