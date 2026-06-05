@@ -1,0 +1,23 @@
+appId: dev.takumilabs.inari
+productName: "稲 ¦ Inari"
+asar: false
+files:
+  - "**/*"
+  - "!node_modules/**/*"
+  - "!src/**/*"
+  - "!*.config.*"
+  - "!.eslintrc*"
+  - "!index.html"
+directories:
+  output: release
+win:
+  icon: public/assets/icon.ico
+  target: nsis
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  installerIcon: public/assets/icon.ico
+  installerHeaderIcon: public/assets/icon.ico
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: "稲 ¦ Inari"

@@ -12,6 +12,15 @@ dist/
 dist-ssr/
 build/
 
+# Electron build output
+dashboard/release/
+dashboard/dist-electron/
+dashboard/.electron-builder-cache/
+*.exe
+*.dmg
+*.AppImage
+*.zip
+
 # Environment & secrets
 .env
 .env.*
@@ -22,6 +31,7 @@ bot/data/*.db
 bot/data/*.db-shm
 bot/data/*.db-wal
 
+# Default Vite assets
 dashboard/src/assets/hero.png
 dashboard/src/assets/react.svg
 dashboard/src/assets/vite.svg
@@ -38,6 +48,7 @@ lerna-debug.log*
 # Editor directories
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea/
 *.suo
 *.ntvs*
