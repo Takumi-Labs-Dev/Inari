@@ -163,7 +163,7 @@ inari/
 
 ## ✦ Version
 
-**Current Version:** `0.1.0-beta`
+**Current Version:** `0.1.0-beta`.
 
 ---
 
