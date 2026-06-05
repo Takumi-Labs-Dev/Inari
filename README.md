@@ -113,19 +113,21 @@ http://localhost:3003
 ---
 
 ## ✦ How It Works
-Open dashboard → Design embed visually
-↓
-Live preview updates in real time
-↓
-Select server + channel
-↓
-Click Send
-↓
-Inari bot delivers embed to Discord
 
+> Open dashboard → Design embed visually
+> ↓
+> Live preview updates in real time
+> ↓
+> Select server + channel
+> ↓
+> Click Send
+> ↓
+> Inari bot delivers embed to Discord
 ---
 
 ## ✦ Project Structure
+
+```text
 inari/
 ├── bot/                  # Discord bot + REST API
 │   ├── src/
@@ -145,6 +147,7 @@ inari/
 │
 ├── docker-compose.yml
 └── .env
+```
 
 ---
 
