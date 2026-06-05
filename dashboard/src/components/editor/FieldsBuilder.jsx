@@ -52,6 +52,7 @@ export default function FieldsBuilder() {
             onChange={(v) => updateField(i, 'value', v)}
             maxLength={1024}
             rows={2}
+            showToolbar
           />
         </div>
       ))}

@@ -42,13 +42,14 @@ export default function EditorPanel() {
           onChange={(v) => setEmbed('title', v)}
           maxLength={256}
         />
-        <Textarea
+       <Textarea
           label="Description"
           placeholder="Supports **markdown** — bold, *italic*, `code`, [links](url)..."
           value={embed.description}
           onChange={(v) => setEmbed('description', v)}
           maxLength={4096}
           rows={6}
+          showToolbar
         />
       </Section>
 
