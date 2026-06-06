@@ -23,7 +23,7 @@
 
 ## ✦ Overview
 
-Inari is a self-hosted Discord embed builder with a live web dashboard. Design rich embeds visually, preview them in an accurate Discord replica, and send them directly to any channel — all without touching a single line of code.
+Inari is a self-hosted Discord embed builder with a live web dashboard. Design rich embeds visually, preview them in an accurate Discord replica, and send them directly to any channel — all without touching a single line of code. Access is gated behind Discord OAuth2 — only members of your server can log in.
 
 ---
 
@@ -49,6 +49,7 @@ Inari is a self-hosted Discord embed builder with a live web dashboard. Design r
 
 ## ✦ Features
 
+- **✦ Discord OAuth2 Login** — Secure login with Discord, restricted to members of your server
 - **✦ Live Preview** — Accurate Discord embed rendering updates as you type, with Dark, Light, and AMOLED theme support
 - **✦ Full Embed Control** — Title, description, author, footer, fields, thumbnail, image, color, and timestamp
 - **✦ Code Block Inserter** — One-click code block with language selector (js, py, ts, bash, json, and more)
@@ -83,6 +84,7 @@ Inari is a self-hosted Discord embed builder with a live web dashboard. Design r
 | Styling    | Tailwind CSS v4         |
 | Storage    | SQLite (better-sqlite3) |
 | API        | Express.js v5           |
+| Auth       | Passport + Discord OAuth2 |
 | Hosting    | Docker + nginx          |
 | Desktop    | Electron                |
 | Editor     | Visual Studio Code      |
@@ -95,7 +97,7 @@ Inari is a self-hosted Discord embed builder with a live web dashboard. Design r
 
 - Node.js 18+
 - Docker Desktop
-- A Discord bot token
+- A Discord bot token + application with OAuth2 enabled
 
 ### 1. Clone the repo
 
@@ -110,46 +112,69 @@ cd Inari
 # Bot
 DISCORD_TOKEN=your_bot_token_here
 DISCORD_CLIENT_ID=your_application_id_here
-DISCORD_GUILD_ID=your_test_server_id_here
+DISCORD_GUILD_ID=your_server_id_here
 
 # API
 API_PORT=3003
 
 # Dashboard
 VITE_API_URL=http://localhost:3003
+
+# Auth
+DISCORD_CLIENT_SECRET=your_client_secret_here
+SESSION_SECRET=your_random_secret_here
+REDIRECT_URI=http://localhost:3003/auth/callback
 ```
 
-### 3. Start with Docker
+### 3. Add OAuth2 redirect URI in Discord Developer Portal
+
+Go to your application → OAuth2 → Redirects → add:
+http://localhost:3003/auth/callback
+
+### 4. Build the dashboard
+
+```bash
+cd dashboard
+npm install
+npm run build
+cd ..
+```
+
+### 5. Start with Docker
 
 ```bash
 docker compose up --build
 ```
 
-### 4. Open the dashboard
-http://localhost
+### 6. Open the dashboard
 
-### 5. Verify the bot API
 http://localhost:3003
+
+### 7. Log in with Discord
+
+Click **Login with Discord** — only members of your configured guild will be granted access.
 
 ---
 
 ## ✦ Desktop App
 
-A Windows desktop app is available as a standalone installer from the [Releases](https://github.com/Takumi-Labs-Dev/Inari/releases) page.
+A Windows desktop app is available from the [Releases](https://github.com/Takumi-Labs-Dev/Inari/releases) page.
 
-> The bot must still be running locally before launching the desktop app.
-> Run `docker compose up` first, then open the installer.
+> Docker must be running and `docker compose up` must be started before launching the desktop app.
+> The exe connects to `localhost:3003` where the bot serves the dashboard.
 
 ---
 
 ## ✦ How It Works
-Open dashboard → Design embed visually
+User logs in with Discord OAuth2
+↓
+Guild membership verified
+↓
+Dashboard loads → Design embed visually
 ↓
 Live preview updates in real time
 ↓
-Select server + channel
-↓
-Click Send
+Select server + channel → Click Send
 ↓
 Inari bot delivers embed to Discord
 
@@ -164,13 +189,14 @@ inari/
 │   │   ├── index.js      # Bot entry point
 │   │   ├── db.js         # SQLite setup
 │   │   └── routes/
-│   │       └── api.js    # Express API routes
+│   │       ├── api.js    # Express API + static file serving
+│   │       └── auth.js   # Discord OAuth2 + session
 │   └── Dockerfile
 │
 ├── dashboard/            # React web dashboard
 │   ├── src/
-│   │   ├── components/   # Editor, preview, layout
-│   │   ├── pages/        # Builder, Templates, Vault
+│   │   ├── components/   # Editor, preview, layout, AuthGuard
+│   │   ├── pages/        # Builder, Templates, Vault, Login
 │   │   ├── store/        # Zustand state
 │   │   └── api/          # API client
 │   ├── electron.cjs      # Electron main process
@@ -184,15 +210,16 @@ inari/
 
 ## ✦ System Highlights
 
-| Feature          | Description                                      |
-| ---------------- | ------------------------------------------------ |
-| Live Preview     | Accurate Discord embed replica with theme toggle |
-| Vault            | Image URL library with proxy-free previews       |
-| Templates        | SQLite-backed named embed presets                |
-| Emoji Picker     | Real server emojis including animated GIFs       |
-| Direct Send      | Send to any channel without leaving the UI       |
-| Desktop App      | Electron wrapper with Windows installer          |
-| Zero Config Send | No bot commands needed — pure dashboard control  |
+| Feature           | Description                                        |
+| ----------------- | -------------------------------------------------- |
+| Discord OAuth2    | Login gate with guild membership verification      |
+| Live Preview      | Accurate Discord embed replica with theme toggle   |
+| Vault             | Image URL library with proxy-free previews         |
+| Templates         | SQLite-backed named embed presets                  |
+| Emoji Picker      | Real server emojis including animated GIFs         |
+| Direct Send       | Send to any channel without leaving the UI         |
+| Desktop App       | Electron wrapper loading from localhost:3003       |
+| Zero Config Send  | No bot commands needed — pure dashboard control    |
 
 ---
 
