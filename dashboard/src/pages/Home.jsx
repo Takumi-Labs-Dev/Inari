@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
+import wallpaper from '/assets/HomeWallpaper.png'
 
 export default function Home() {
   return (
     <div
       className="flex flex-col items-center justify-center min-h-screen gap-10 relative px-4"
       style={{
-        backgroundImage: 'url(/assets/HomeWallpaper.png)',
+        backgroundImage: `url(${wallpaper})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',

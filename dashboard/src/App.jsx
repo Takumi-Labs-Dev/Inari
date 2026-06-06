@@ -1,11 +1,11 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Shell from './components/layout/Shell'
+import { HashRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Builder from './pages/Builder'
 import Settings from './pages/Settings'
 import Templates from './pages/Templates'
 import Vault from './pages/Vault'
 import ColorPalettes from './pages/ColorPalettes'
+import Shell from './components/layout/Shell'
 
 const Stub = ({ name }) => (
   <div className="flex items-center justify-center h-full">
@@ -15,7 +15,7 @@ const Stub = ({ name }) => (
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Shell />}>
           <Route index element={<Home />} />
@@ -27,6 +27,6 @@ export default function App() {
           <Route path="history" element={<Stub name="History" />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   )
 }

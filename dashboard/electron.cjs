@@ -1,9 +1,7 @@
 const { app, BrowserWindow, shell } = require('electron')
 const path = require('path')
-const { spawn } = require('child_process')
 
 let mainWindow
-let botProcess
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -21,16 +19,15 @@ function createWindow() {
     autoHideMenuBar: true,
   })
 
-  // In production, load the built index.html
-  // In dev, load the Vite dev server
+  mainWindow.webContents.openDevTools()
+
   if (app.isPackaged) {
-    mainWindow.loadFile(path.join(__dirname, 'dist/index.html'))
+    const indexPath = path.join(__dirname, 'dist', 'index.html')
+    mainWindow.loadFile(indexPath)
   } else {
     mainWindow.loadURL('http://localhost:5173')
-    mainWindow.webContents.openDevTools()
   }
 
-  // Open external links in the system browser, not Electron
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url)
     return { action: 'deny' }
