@@ -13,7 +13,7 @@
 ![Node.js](https://img.shields.io/badge/Node.js-LTS-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![Discord.js](https://img.shields.io/badge/Discord.js-v14-5865F2?style=for-the-badge&logo=discord&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![SQLite](https://img.shields.io/badge/Storage-SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
 
@@ -24,6 +24,26 @@
 ## ✦ Overview
 
 Inari is a self-hosted Discord embed builder with a live web dashboard. Design rich embeds visually, preview them in an accurate Discord replica, and send them directly to any channel — all without touching a single line of code.
+
+---
+
+## ✦ Screenshots
+
+<div align="center">
+
+**Home**
+<img src="https://res.cloudinary.com/didnxcljf/image/upload/v1780713253/Home_Preview_smhef3.png" width="100%" />
+
+**Embed Builder**
+<img src="https://res.cloudinary.com/didnxcljf/image/upload/v1780713275/EmbedBuilder_Preview_flz8ym.png" width="100%" />
+
+**Color Palettes**
+<img src="https://res.cloudinary.com/didnxcljf/image/upload/v1780713289/ColorPalettes_Preview_tdotvn.png" width="100%" />
+
+**Vault**
+<img src="https://res.cloudinary.com/didnxcljf/image/upload/v1780713388/Vault_Preview_qun62c.png" width="100%" />
+
+</div>
 
 ---
 
@@ -55,16 +75,17 @@ Inari is a self-hosted Discord embed builder with a live web dashboard. Design r
 
 ## ✦ Tech Stack
 
-| Layer      | Tool                  |
-| ---------- | --------------------- |
-| Runtime    | Node.js LTS           |
-| Bot        | Discord.js v14        |
-| Dashboard  | React 19 + Vite 6     |
-| Styling    | Tailwind CSS v4       |
+| Layer      | Tool                    |
+| ---------- | ----------------------- |
+| Runtime    | Node.js LTS             |
+| Bot        | Discord.js v14          |
+| Dashboard  | React 19 + Vite 8       |
+| Styling    | Tailwind CSS v4         |
 | Storage    | SQLite (better-sqlite3) |
-| API        | Express.js v5         |
-| Hosting    | Docker + nginx        |
-| Editor     | Visual Studio Code    |
+| API        | Express.js v5           |
+| Hosting    | Docker + nginx          |
+| Desktop    | Electron                |
+| Editor     | Visual Studio Code      |
 
 ---
 
@@ -112,17 +133,26 @@ http://localhost:3003
 
 ---
 
-## ✦ How It Works
+## ✦ Desktop App
 
-> Open dashboard → Design embed visually
-> ↓
-> Live preview updates in real time
-> ↓
-> Select server + channel
-> ↓
-> Click Send
-> ↓
-> Inari bot delivers embed to Discord
+A Windows desktop app is available as a standalone installer from the [Releases](https://github.com/Takumi-Labs-Dev/Inari/releases) page.
+
+> The bot must still be running locally before launching the desktop app.
+> Run `docker compose up` first, then open the installer.
+
+---
+
+## ✦ How It Works
+Open dashboard → Design embed visually
+↓
+Live preview updates in real time
+↓
+Select server + channel
+↓
+Click Send
+↓
+Inari bot delivers embed to Discord
+
 ---
 
 ## ✦ Project Structure
@@ -143,6 +173,7 @@ inari/
 │   │   ├── pages/        # Builder, Templates, Vault
 │   │   ├── store/        # Zustand state
 │   │   └── api/          # API client
+│   ├── electron.cjs      # Electron main process
 │   └── Dockerfile
 │
 ├── docker-compose.yml
@@ -160,13 +191,14 @@ inari/
 | Templates        | SQLite-backed named embed presets                |
 | Emoji Picker     | Real server emojis including animated GIFs       |
 | Direct Send      | Send to any channel without leaving the UI       |
+| Desktop App      | Electron wrapper with Windows installer          |
 | Zero Config Send | No bot commands needed — pure dashboard control  |
 
 ---
 
 ## ✦ Version
 
-**Current Version:** `0.1.0-beta`.
+**Current Version:** `0.1.0-beta`
 
 ---
 
