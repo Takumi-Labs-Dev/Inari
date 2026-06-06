@@ -1,8 +1,6 @@
-import { NavLink } from 'react-router-dom'
-
-function Icon({ children }) {
-  return <div className="w-5 h-5 flex items-center justify-center">{children}</div>
-}
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { getMe, logout } from '../../api/index.js'
 
 const links = [
   {
@@ -34,11 +32,11 @@ const links = [
     )
   },
   {
-  to: '/vault', label: 'Vault', icon: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} className="w-5 h-5">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-    </svg>
-  )
+    to: '/vault', label: 'Vault', icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} className="w-5 h-5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+      </svg>
+    )
   },
   {
     to: '/history', label: 'History', icon: (
@@ -58,6 +56,23 @@ const links = [
 ]
 
 export default function Sidebar() {
+  const navigate = useNavigate()
+  const [user, setUser] = useState(null)
+  const [showLogout, setShowLogout] = useState(false)
+
+  useEffect(() => {
+    getMe().then(res => setUser(res.data)).catch(() => {})
+  }, [])
+
+  async function handleLogout() {
+    await logout()
+    window.location.reload()
+  }
+
+  const avatarUrl = user
+    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`
+    : null
+
   return (
     <aside
       className="w-[68px] flex flex-col items-center py-3 gap-1 flex-shrink-0"
@@ -71,28 +86,96 @@ export default function Sidebar() {
         稲
       </div>
 
+      {/* Nav links */}
       {links.map(({ to, label, icon }) => (
         <NavLink
           key={to}
           to={to}
           title={label}
           end={to === '/'}
-          className={({ isActive }) =>
-            `w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-150 group relative`
-          }
+          className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-150 group relative"
           style={({ isActive }) => isActive
             ? { background: 'rgba(16,185,129,0.15)', color: '#34d399', border: '1px solid rgba(16,185,129,0.2)' }
             : { color: 'rgba(255,255,255,0.25)', border: '1px solid transparent' }
           }
         >
           {({ isActive }) => (
-            <span style={{ color: isActive ? '#34d399' : 'rgba(255,255,255,0.3)' }}
-              className="group-hover:!text-white transition-colors">
+            <span
+              style={{ color: isActive ? '#34d399' : 'rgba(255,255,255,0.3)' }}
+              className="group-hover:!text-white transition-colors"
+            >
               {icon}
             </span>
           )}
         </NavLink>
       ))}
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* User avatar + logout */}
+      {user && (
+        <div className="relative">
+          <button
+            onClick={() => setShowLogout(v => !v)}
+            className="w-10 h-10 rounded-xl overflow-hidden transition-all hover:ring-2 focus:outline-none"
+            style={{ border: '1px solid rgba(16,185,129,0.2)', ringColor: '#34d399' }}
+            title={user.username}
+          >
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={user.username}
+                className="w-full h-full object-cover"
+                onError={e => { e.target.style.display = 'none' }}
+              />
+            ) : (
+              <div
+                className="w-full h-full flex items-center justify-center text-xs font-bold"
+                style={{ background: 'rgba(16,185,129,0.15)', color: '#34d399' }}
+              >
+                {user.username?.[0]?.toUpperCase()}
+              </div>
+            )}
+          </button>
+
+          {/* Logout popup */}
+          {showLogout && (
+            <div
+              className="absolute bottom-12 left-0 rounded-xl overflow-hidden z-50"
+              style={{
+                background: '#111114',
+                border: '1px solid rgba(16,185,129,0.15)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                minWidth: 160,
+              }}
+            >
+              {/* User info */}
+              <div
+                className="px-3 py-2.5 border-b"
+                style={{ borderColor: 'rgba(255,255,255,0.06)' }}
+              >
+                <p className="text-xs font-semibold text-white truncate">{user.username}</p>
+                <p className="text-[11px] mt-0.5 truncate" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                  Discord
+                </p>
+              </div>
+
+              {/* Logout button */}
+              <button
+                onClick={handleLogout}
+                className="w-full px-3 py-2.5 text-left text-xs flex items-center gap-2 transition-colors hover:bg-red-500/10"
+                style={{ color: '#f87171' }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                </svg>
+                Sign out
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </aside>
   )
 }

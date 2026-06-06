@@ -17,7 +17,7 @@ client.commands = new Collection();
 
 client.once('clientReady', () => {
   console.log(`✅ Inari is online as ${client.user.tag}`);
-  startAPI();  // starts the REST API for the dashboard
+  startAPI();
 });
 
 client.login(process.env.DISCORD_TOKEN);
