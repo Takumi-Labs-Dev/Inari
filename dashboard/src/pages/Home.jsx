@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import wallpaper from '/assets/HomeWallpaper.png'
 
+const API = import.meta.env.VITE_API_URL || 'http://localhost:3003'
+
 export default function Home() {
   return (
     <div
@@ -58,7 +60,7 @@ export default function Home() {
         </Link>
 
         <a
-          href="http://localhost:3003/guilds"
+          href={`${API}/api/health`}
           target="_blank"
           rel="noreferrer"
           className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:scale-105"

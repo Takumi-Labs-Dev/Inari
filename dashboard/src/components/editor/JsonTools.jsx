@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useEmbedStore } from '../../store/embedStore'
 
 export default function JsonTools() {
-  const { embed, setEmbed, setNestedEmbed } = useEmbedStore()
+  const { embed, loadEmbed } = useEmbedStore()
   const [showModal, setShowModal] = useState(false)
   const [jsonText, setJsonText] = useState('')
   const [error, setError] = useState(null)
@@ -25,15 +25,12 @@ export default function JsonTools() {
   const handleImport = () => {
     try {
       const parsed = JSON.parse(jsonText)
-      const fields = ['title', 'description', 'color', 'timestamp']
-      const nested = ['author', 'footer', 'thumbnail', 'image']
-      fields.forEach((k) => { if (parsed[k] !== undefined) setEmbed(k, parsed[k]) })
-      nested.forEach((k) => {
-        if (parsed[k]) {
-          Object.entries(parsed[k]).forEach(([nk, nv]) => setNestedEmbed(k, nk, nv))
-        }
-      })
-      if (parsed.fields) setEmbed('fields', parsed.fields)
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        throw new Error('Not an embed object')
+      }
+      // Also accept a full Discord message: { "embeds": [ { ... } ] }
+      const source = Array.isArray(parsed.embeds) && parsed.embeds[0] ? parsed.embeds[0] : parsed
+      loadEmbed(source)
       setShowModal(false)
     } catch {
       setError('Invalid JSON — check your syntax and try again.')

@@ -12,6 +12,39 @@ const defaultEmbed = {
   timestamp: null,
 }
 
+const asText = (v) => (typeof v === 'string' ? v : '')
+const asObject = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v : {})
+
+// Turns ANY object (a saved template, pasted JSON) into a complete, safe embed.
+// Missing parts fall back to empty values, so nothing from the previous embed survives.
+function normalizeEmbed(raw) {
+  const src = asObject(raw)
+  const author = asObject(src.author)
+  const footer = asObject(src.footer)
+  return {
+    title: asText(src.title),
+    description: asText(src.description),
+    color:
+      Number.isInteger(src.color) && src.color >= 0 && src.color <= 0xffffff
+        ? src.color
+        : defaultEmbed.color,
+    author: { name: asText(author.name), icon_url: asText(author.icon_url) },
+    footer: { text: asText(footer.text), icon_url: asText(footer.icon_url) },
+    thumbnail: { url: asText(asObject(src.thumbnail).url) },
+    image: { url: asText(asObject(src.image).url) },
+    fields: Array.isArray(src.fields)
+      ? src.fields
+          .filter((f) => f && typeof f === 'object')
+          .slice(0, 25)
+          .map((f) => ({ name: asText(f.name), value: asText(f.value), inline: f.inline === true }))
+      : [],
+    timestamp:
+      typeof src.timestamp === 'string' && !Number.isNaN(Date.parse(src.timestamp))
+        ? src.timestamp
+        : null,
+  }
+}
+
 export const useEmbedStore = create((set) => ({
   // Embed data
   embed: { ...defaultEmbed },
@@ -29,6 +62,9 @@ export const useEmbedStore = create((set) => ({
 
   templates: [],
   setTemplates: (templates) => set({ templates }),
+
+  // Replace the whole embed (used by Templates and JSON import)
+  loadEmbed: (raw) => set({ embed: normalizeEmbed(raw) }),
 
   // Embed updaters
   setEmbed: (key, value) =>

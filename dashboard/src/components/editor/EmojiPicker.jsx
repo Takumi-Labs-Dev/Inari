@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useEmbedStore } from '../../store/embedStore'
-import { getEmojis } from '../../api'
+import { getEmojis } from '../../api/index.js'
 
 export default function EmojiPicker({ onInsert }) {
   const [open, setOpen] = useState(false)
@@ -24,6 +24,7 @@ export default function EmojiPicker({ onInsert }) {
     setLoading(true)
     getEmojis(selectedGuild.id)
       .then((r) => setEmojis(r.data))
+      .catch(() => setEmojis([]))
       .finally(() => setLoading(false))
   }, [open, selectedGuild])
 

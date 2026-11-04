@@ -12,7 +12,7 @@ function timeAgo(unix) {
 }
 
 export default function Templates() {
-  const { embed, setEmbed, setTemplates, templates } = useEmbedStore()
+  const { embed, loadEmbed, setTemplates, templates } = useEmbedStore()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [showSave, setShowSave] = useState(false)
@@ -44,19 +44,13 @@ export default function Templates() {
   }
 
   const handleLoad = async (id) => {
-    const res = await getTemplate(id)
-    const e = res.data.embed
-    const fields = ['title', 'description', 'color', 'timestamp', 'fields']
-    const nested = ['author', 'footer', 'thumbnail', 'image']
-    fields.forEach((k) => { if (e[k] !== undefined) setEmbed(k, e[k]) })
-    nested.forEach((k) => {
-      if (e[k]) {
-        Object.entries(e[k]).forEach(([nk, nv]) => {
-          useEmbedStore.getState().setNestedEmbed(k, nk, nv)
-        })
-      }
-    })
-    navigate('/builder')
+    try {
+      const res = await getTemplate(id)
+      loadEmbed(res.data.embed)
+      navigate('/builder')
+    } catch {
+      // Leave the editor as it is if the template could not be loaded
+    }
   }
 
   const handleDelete = async (id) => {

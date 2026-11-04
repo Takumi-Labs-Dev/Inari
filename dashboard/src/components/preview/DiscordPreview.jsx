@@ -6,13 +6,28 @@ function intToHex(int) {
   return '#' + int.toString(16).padStart(6, '0')
 }
 
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+// Everything is escaped FIRST, so pasted HTML or scripts can never run.
+// Links are only turned into <a> when they start with http:// or https://.
 function renderMarkdown(text) {
   if (!text) return ''
-  return text
+  return escapeHtml(text)
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .replace(/`(.+?)`/g, '<code style="background:rgba(0,0,0,0.3);padding:1px 4px;border-radius:3px;font-size:12px;font-family:monospace">$1</code>')
-    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color:#00aff4">$1</a>')
+    .replace(/\[(.+?)\]\((.+?)\)/g, (match, label, url) =>
+      /^https?:\/\//i.test(url)
+        ? `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:#00aff4">${label}</a>`
+        : match
+    )
     .replace(/\n/g, '<br/>')
 }
 
