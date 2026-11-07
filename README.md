@@ -50,6 +50,39 @@ Waffle works in **any server**. Anyone can sign in with Discord, and for each se
 
 ---
 
+## ✦ Screenshots
+
+*Screenshots show sample data.*
+
+### Sign in
+<img src="docs/screenshots/login.png" alt="Waffle sign-in page" />
+
+### Home
+<img src="docs/screenshots/home.png" alt="Home page with the server picker" />
+
+### Builder
+Edit on the left, see the Discord-style preview on the right, then pick a channel and send.
+<img src="docs/screenshots/builder.png" alt="Embed builder with live preview" />
+
+### Templates
+Save named embed designs per server and load them back in one click.
+<img src="docs/screenshots/templates.png" alt="Templates page" />
+
+### Color palettes
+<img src="docs/screenshots/colors.png" alt="Color palettes page" />
+
+### Vault
+Keep image URLs per server with live previews.
+<img src="docs/screenshots/vault.png" alt="Vault page" />
+
+### When Waffle isn't in a server yet
+<img src="docs/screenshots/no-server.png" alt="Prompt to add Waffle to a server" />
+
+### History and Settings (coming soon)
+<img src="docs/screenshots/history.png" alt="History page placeholder" width="48%" /> <img src="docs/screenshots/settings.png" alt="Settings page placeholder" width="48%" />
+
+---
+
 ## ✦ Tech Stack
 
 | Layer     | Tool                       |
