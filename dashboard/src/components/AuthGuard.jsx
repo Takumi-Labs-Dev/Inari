@@ -15,12 +15,20 @@ export default function AuthGuard({ children }) {
     return (
       <div
         className="flex items-center justify-center min-h-screen"
-        style={{ background: '#0a0a0b' }}
+        style={{ background: 'var(--w-bg)' }}
+        role="status"
+        aria-live="polite"
       >
         <div className="flex flex-col items-center gap-3">
-          <span className="text-3xl text-emerald-400">稲</span>
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>
-            Checking session...
+          <img
+            src="/assets/waffle/mascot/waffle-face-sleepy.png"
+            alt=""
+            width={96}
+            height={96}
+            className="pixelated animate-pulse"
+          />
+          <p className="font-pixel text-base" style={{ color: 'var(--w-ink-soft)' }}>
+            Waking Waffle up...
           </p>
         </div>
       </div>

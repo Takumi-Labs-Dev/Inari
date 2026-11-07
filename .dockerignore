@@ -1,0 +1,16 @@
+.git
+.gitignore
+.vscode
+.env
+.env.*
+!.env.example
+node_modules
+**/node_modules
+**/dist
+dashboard/release
+dashboard/dist-electron
+dashboard/.electron-builder-cache
+bot/data
+*.zip
+*.log
+README.md

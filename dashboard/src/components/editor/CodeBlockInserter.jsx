@@ -17,8 +17,8 @@ export default function CodeBlockInserter({ onInsert }) {
       <select
         value={lang}
         onChange={(e) => setLang(e.target.value)}
-        className="bg-obsidian-800 border border-obsidian-600 rounded-lg px-2 py-1.5
-          text-xs text-obsidian-200 font-mono focus:outline-none focus:border-jade-600
+        className="bg-cream-50 border border-cream-300 rounded-lg px-2 py-1.5
+          text-xs text-cocoa-700 font-mono focus:outline-none focus:border-toast-700
           transition-colors"
       >
         {LANGUAGES.map((l) => (
@@ -28,9 +28,9 @@ export default function CodeBlockInserter({ onInsert }) {
       <button
         type="button"
         onClick={handleInsert}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-obsidian-600
-          bg-obsidian-800 text-xs font-medium text-obsidian-300 hover:text-obsidian-100
-          hover:border-obsidian-500 transition-colors font-mono"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-cream-300
+          bg-cream-50 text-xs font-medium text-cocoa-600 hover:text-cocoa-900
+          hover:border-caramel-600 transition-colors font-mono"
       >
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />

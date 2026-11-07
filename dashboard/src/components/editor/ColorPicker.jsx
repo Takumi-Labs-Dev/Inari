@@ -1,14 +1,16 @@
 import { useState } from 'react'
 
+const DEFAULT_COLOR = 0xe08a2b // syrup
+
 const PRESETS = [
-  { label: 'Jade',    hex: '#10b981' },
-  { label: 'Blurple', hex: '#5865f2' },
-  { label: 'Rose',    hex: '#f43f5e' },
-  { label: 'Amber',   hex: '#f59e0b' },
-  { label: 'Sky',     hex: '#0ea5e9' },
-  { label: 'Violet',  hex: '#8b5cf6' },
-  { label: 'White',   hex: '#ffffff' },
-  { label: 'Dark',    hex: '#2b2d31' },
+  { label: 'Syrup',      hex: '#e08a2b' },
+  { label: 'Honey',      hex: '#e8a93c' },
+  { label: 'Caramel',    hex: '#b8692f' },
+  { label: 'Toast',      hex: '#8a4b22' },
+  { label: 'Strawberry', hex: '#d9534a' },
+  { label: 'Leaf',       hex: '#7fa650' },
+  { label: 'Cream',      hex: '#f7e4b8' },
+  { label: 'Blurple',    hex: '#5865f2' },
 ]
 
 function hexToInt(hex) {
@@ -20,7 +22,7 @@ function intToHex(int) {
 }
 
 export default function ColorPicker({ value, onChange }) {
-  const [custom, setCustom] = useState(intToHex(value || 1752220))
+  const [custom, setCustom] = useState(intToHex(value ?? DEFAULT_COLOR))
 
   const handlePreset = (hex) => {
     setCustom(hex)
@@ -34,16 +36,16 @@ export default function ColorPicker({ value, onChange }) {
     }
   }
 
-  const currentHex = intToHex(value || 1752220)
+  const currentHex = intToHex(value ?? DEFAULT_COLOR)
 
   return (
     <div className="flex flex-col gap-3">
-      <label className="text-[11px] font-semibold uppercase tracking-widest text-obsidian-300">
+      <label className="text-[11px] font-semibold uppercase tracking-widest text-cocoa-600">
         Accent color
       </label>
       <div className="flex items-center gap-3">
         <div
-          className="w-10 h-10 rounded-lg border-2 border-obsidian-600 flex-shrink-0 cursor-pointer"
+          className="w-10 h-10 rounded-lg border-2 border-cream-300 flex-shrink-0 cursor-pointer"
           style={{ backgroundColor: currentHex }}
           onClick={() => document.getElementById('color-input').click()}
         />
@@ -59,9 +61,9 @@ export default function ColorPicker({ value, onChange }) {
           value={custom}
           onChange={(e) => handleCustom(e.target.value)}
           maxLength={7}
-          className="flex-1 bg-obsidian-800 border border-obsidian-600 rounded-lg px-3 py-2
-            text-sm font-mono text-obsidian-100 focus:outline-none focus:border-jade-600
-            focus:ring-1 focus:ring-jade-600/30 transition-colors"
+          className="flex-1 bg-cream-50 border border-cream-300 rounded-lg px-3 py-2
+            text-sm font-mono text-cocoa-900 focus:outline-none focus:border-toast-700
+            focus:ring-1 focus:ring-honey-500/40 transition-colors"
         />
       </div>
       <div className="flex gap-2 flex-wrap">
@@ -73,7 +75,7 @@ export default function ColorPicker({ value, onChange }) {
             className="w-6 h-6 rounded-md border-2 transition-all hover:scale-110"
             style={{
               backgroundColor: p.hex,
-              borderColor: currentHex === p.hex ? '#10b981' : 'transparent',
+              borderColor: currentHex === p.hex ? 'var(--w-ink)' : 'transparent',
             }}
           />
         ))}

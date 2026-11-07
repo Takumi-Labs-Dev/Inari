@@ -1,6 +1,19 @@
 const { app, BrowserWindow, shell, session } = require('electron')
 const path = require('path')
 
+// The installed app is a window onto your Waffle website. Change "url" in
+// waffle-app.json (for example to https://waffle.example.com) BEFORE building the installer.
+function readAppUrl() {
+  try {
+    const config = require('./waffle-app.json')
+    const url = new URL(config.url)
+    return url.origin
+  } catch {
+    return 'http://localhost:3003'
+  }
+}
+const APP_URL = readAppUrl()
+
 let mainWindow
 
 function createWindow() {
@@ -10,8 +23,8 @@ function createWindow() {
     minWidth: 1024,
     minHeight: 640,
     icon: path.join(__dirname, 'public/assets/icon.ico'),
-    title: '稲 ¦ Inari',
-    backgroundColor: '#0a0a0b',
+    title: 'Waffle',
+    backgroundColor: '#fff6e0',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -21,20 +34,20 @@ function createWindow() {
   })
 
   if (app.isPackaged) {
-    mainWindow.loadURL('http://localhost:3003')
+    mainWindow.loadURL(APP_URL)
   } else {
     mainWindow.loadURL('http://localhost:5173')
   }
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('http://localhost:3003/auth')) {
+    if (url.startsWith(`${APP_URL}/auth`)) {
       return {
         action: 'allow',
         overrideBrowserWindowOptions: {
           width: 500,
           height: 700,
           autoHideMenuBar: true,
-          backgroundColor: '#0a0a0b',
+          backgroundColor: '#fff6e0',
           webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -51,7 +64,7 @@ function createWindow() {
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.executeJavaScript(`
       window.addEventListener('message', (e) => {
-        if (e.data === 'inari-auth-success') {
+        if (e.data === 'waffle-auth-success') {
           window.location.reload()
         }
       })

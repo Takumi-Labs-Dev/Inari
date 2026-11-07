@@ -9,18 +9,18 @@ export default function FieldsBuilder() {
   return (
     <div className="flex flex-col gap-3">
       {fields.map((field, i) => (
-        <div key={i} className="bg-obsidian-800 border border-obsidian-600 rounded-xl p-3 flex flex-col gap-3">
+        <div key={i} className="bg-cream-50 border border-cream-300 rounded-xl p-3 flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold uppercase tracking-widest text-obsidian-300">
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-cocoa-600">
               Field {i + 1}
             </span>
             <div className="flex items-center gap-3">
               <label className="flex items-center gap-2 cursor-pointer">
-                <span className="text-xs text-obsidian-300">Inline</span>
+                <span className="text-xs text-cocoa-600">Inline</span>
                 <div
                   onClick={() => updateField(i, 'inline', !field.inline)}
                   className={`w-8 h-4 rounded-full transition-colors cursor-pointer relative ${
-                    field.inline ? 'bg-jade-600' : 'bg-obsidian-600'
+                    field.inline ? 'bg-honey-500' : 'bg-cream-300'
                   }`}
                 >
                   <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all ${
@@ -30,7 +30,7 @@ export default function FieldsBuilder() {
               </label>
               <button
                 onClick={() => removeField(i)}
-                className="text-obsidian-400 hover:text-red-400 transition-colors"
+                className="text-cocoa-500 hover:text-berry-500 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -61,8 +61,8 @@ export default function FieldsBuilder() {
         <button
           onClick={addField}
           className="flex items-center justify-center gap-2 py-2.5 border border-dashed
-            border-obsidian-600 rounded-xl text-sm text-obsidian-400 hover:text-jade-400
-            hover:border-jade-700 transition-colors"
+            border-cream-300 rounded-xl text-sm text-cocoa-500 hover:text-toast-700
+            hover:border-caramel-600 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />

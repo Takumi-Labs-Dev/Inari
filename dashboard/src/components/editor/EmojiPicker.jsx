@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useEmbedStore } from '../../store/embedStore'
-import { getEmojis } from '../../api'
+import { getEmojis } from '../../api/index.js'
 
 export default function EmojiPicker({ onInsert }) {
   const [open, setOpen] = useState(false)
@@ -24,6 +24,7 @@ export default function EmojiPicker({ onInsert }) {
     setLoading(true)
     getEmojis(selectedGuild.id)
       .then((r) => setEmojis(r.data))
+      .catch(() => setEmojis([]))
       .finally(() => setLoading(false))
   }, [open, selectedGuild])
 
@@ -42,8 +43,8 @@ export default function EmojiPicker({ onInsert }) {
         className={`
           flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors
           ${open
-            ? 'bg-jade-600/20 border-jade-700 text-jade-400'
-            : 'bg-obsidian-800 border-obsidian-600 text-obsidian-300 hover:text-obsidian-100 hover:border-obsidian-500'
+            ? 'bg-honey-500/25 border-caramel-600 text-toast-700'
+            : 'bg-cream-50 border-cream-300 text-cocoa-600 hover:text-cocoa-900 hover:border-caramel-600'
           }
           ${!selectedGuild ? 'opacity-50 cursor-not-allowed' : ''}
         `}
@@ -56,36 +57,36 @@ export default function EmojiPicker({ onInsert }) {
       </button>
 
       {open && (
-        <div className="absolute bottom-full left-0 mb-2 w-72 bg-obsidian-900 border border-obsidian-700 rounded-xl overflow-hidden z-50 shadow-xl">
+        <div className="absolute bottom-full left-0 mb-2 w-72 bg-cream-50 border border-cream-300 rounded-xl overflow-hidden z-50 shadow-xl">
 
           {/* Search */}
-          <div className="p-2 border-b border-obsidian-700">
+          <div className="p-2 border-b border-cream-300">
             <input
               type="text"
               placeholder="Search emojis..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               autoFocus
-              className="w-full bg-obsidian-800 border border-obsidian-600 rounded-lg px-3 py-1.5
-                text-sm text-obsidian-100 placeholder-obsidian-500
-                focus:outline-none focus:border-jade-600 transition-colors"
+              className="w-full bg-cream-50 border border-cream-300 rounded-lg px-3 py-1.5
+                text-sm text-cocoa-900 placeholder-cocoa-400
+                focus:outline-none focus:border-toast-700 transition-colors"
             />
           </div>
 
           {/* Grid */}
           <div className="p-2 max-h-48 overflow-y-auto">
             {loading ? (
-              <div className="flex items-center justify-center py-6 text-obsidian-500 text-sm">
+              <div className="flex items-center justify-center py-6 text-cocoa-500 text-sm">
                 Loading...
               </div>
             ) : filtered.length === 0 ? (
-              <div className="flex items-center justify-center py-6 text-obsidian-500 text-sm">
+              <div className="flex items-center justify-center py-6 text-cocoa-500 text-sm">
                 No emojis found
               </div>
             ) : (
               <>
                 {!search && recent.length > 0 && (
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-obsidian-500 px-1 mb-1">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-cocoa-500 px-1 mb-1">
                     Server emojis
                   </p>
                 )}
@@ -102,7 +103,7 @@ export default function EmojiPicker({ onInsert }) {
                         setOpen(false)
                         setSearch('')
                       }}
-                      className="relative w-8 h-8 rounded-md flex items-center justify-center hover:bg-obsidian-700 transition-colors"
+                      className="relative w-8 h-8 rounded-md flex items-center justify-center hover:bg-cream-200 transition-colors"
                     >
                       <img
                         src={emoji.url}
@@ -110,7 +111,7 @@ export default function EmojiPicker({ onInsert }) {
                         className="w-6 h-6 object-contain"
                       />
                       {emoji.animated && (
-                        <span className="absolute bottom-0.5 right-0.5 w-1.5 h-1.5 bg-jade-500 rounded-full" />
+                        <span className="absolute bottom-0.5 right-0.5 w-1.5 h-1.5 bg-honey-500 rounded-full" />
                       )}
                     </button>
                   ))}
@@ -120,17 +121,17 @@ export default function EmojiPicker({ onInsert }) {
           </div>
 
           {/* Footer preview */}
-          <div className="px-3 py-2 border-t border-obsidian-700 bg-obsidian-950 flex items-center gap-2 min-h-[36px]">
+          <div className="px-3 py-2 border-t border-cream-300 bg-cream-200 flex items-center gap-2 min-h-[36px]">
             {hovered ? (
               <>
                 <img src={hovered.url} alt={hovered.name} className="w-5 h-5 object-contain" />
-                <span className="text-xs text-obsidian-200 font-mono">:{hovered.name}:</span>
+                <span className="text-xs text-cocoa-700 font-mono">:{hovered.name}:</span>
                 {hovered.animated && (
-                  <span className="text-[10px] text-jade-400 border border-jade-700 rounded px-1">GIF</span>
+                  <span className="text-[10px] text-toast-700 border border-caramel-600 rounded px-1">GIF</span>
                 )}
               </>
             ) : (
-              <span className="text-xs text-obsidian-500">Hover to preview</span>
+              <span className="text-xs text-cocoa-500">Hover to preview</span>
             )}
           </div>
         </div>

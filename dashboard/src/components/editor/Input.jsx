@@ -5,11 +5,11 @@ export default function Input({ label, placeholder, value, onChange, maxLength, 
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex justify-between items-center">
-        <label className="text-[11px] font-semibold uppercase tracking-widest text-obsidian-300">
+        <label className="text-[11px] font-semibold uppercase tracking-widest text-cocoa-600">
           {label}
         </label>
         {maxLength && (
-          <span className={`text-[11px] tabular-nums ${isNearLimit ? 'text-amber-400' : 'text-obsidian-400'}`}>
+          <span className={`text-[11px] tabular-nums ${isNearLimit ? 'text-caramel-600' : 'text-cocoa-500'}`}>
             {remaining}
           </span>
         )}
@@ -21,9 +21,9 @@ export default function Input({ label, placeholder, value, onChange, maxLength, 
         placeholder={placeholder}
         maxLength={maxLength}
         className={`
-          w-full bg-obsidian-800 border border-obsidian-600 rounded-lg px-3 py-2.5
-          text-sm text-obsidian-100 placeholder-obsidian-400
-          focus:outline-none focus:border-jade-600 focus:ring-1 focus:ring-jade-600/30
+          w-full bg-cream-50 border border-cream-300 rounded-lg px-3 py-2.5
+          text-sm text-cocoa-900 placeholder-cocoa-400
+          focus:outline-none focus:border-toast-700 focus:ring-1 focus:ring-honey-500/40
           transition-colors duration-150
           ${mono ? 'font-mono text-xs' : ''}
         `}

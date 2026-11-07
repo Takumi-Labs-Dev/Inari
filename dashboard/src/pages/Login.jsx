@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react'
-
-const API = import.meta.env.VITE_API_URL || 'http://localhost:3003'
+import { useEffect, useRef, useState } from 'react'
+import { API_URL as API } from '../api/base.js'
 
 export default function Login() {
-  const [status, setStatus] = useState('idle') // idle | waiting | error
+  const [status, setStatus] = useState('idle') // idle | waiting | blocked
+  const timerRef = useRef(null)
+
+  // Never leave the polling timer running if this screen goes away
+  useEffect(() => () => clearInterval(timerRef.current), [])
 
   function handleLogin() {
-    setStatus('waiting')
+    clearInterval(timerRef.current)
 
     const popup = window.open(
       `${API}/auth/login`,
@@ -14,19 +17,27 @@ export default function Login() {
       'width=500,height=700,centerscreen=yes'
     )
 
-    // Poll /auth/me every second until authenticated or popup closes
-    const timer = setInterval(async () => {
+    // The browser refused to open the sign-in window (pop-up blocker)
+    if (!popup) {
+      setStatus('blocked')
+      return
+    }
+
+    setStatus('waiting')
+
+    // Poll /auth/me every second until signed in or the popup closes
+    timerRef.current = setInterval(async () => {
       try {
         const res = await fetch(`${API}/auth/me`, { credentials: 'include' })
         if (res.ok) {
-          clearInterval(timer)
+          clearInterval(timerRef.current)
           window.location.reload()
           return
         }
-      } catch (_) {}
+      } catch { /* server not reachable yet, keep trying */ }
 
-      if (popup?.closed) {
-        clearInterval(timer)
+      if (popup.closed) {
+        clearInterval(timerRef.current)
         setStatus('idle')
       }
     }, 1000)
@@ -34,57 +45,47 @@ export default function Login() {
 
   return (
     <div
-      className="flex flex-col items-center justify-center min-h-screen"
-      style={{ background: '#0a0a0b' }}
+      className="w-tile flex flex-col items-center justify-center min-h-screen px-4"
+      style={{
+        backgroundColor: 'var(--w-bg)',
+        backgroundImage: 'url(/assets/waffle/ui/tile.png)',
+      }}
     >
       <div
-        className="flex flex-col items-center gap-6 p-10 rounded-2xl"
-        style={{
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(16,185,129,0.15)',
-          boxShadow: '0 0 40px rgba(16,185,129,0.05)',
-          minWidth: 340,
-        }}
+        className="w-card flex flex-col items-center gap-5 px-10 py-9 w-full"
+        style={{ maxWidth: 380, border: '2px solid var(--w-line-strong)' }}
       >
-        {/* Icon */}
-        <div
-          className="w-16 h-16 rounded-2xl flex items-center justify-center"
-          style={{
-            background: 'rgba(16,185,129,0.12)',
-            border: '1px solid rgba(16,185,129,0.25)',
-            boxShadow: '0 0 20px rgba(16,185,129,0.15)',
-          }}
-        >
-          <span className="text-3xl text-emerald-400">稲</span>
-        </div>
+        <img
+          src="/assets/waffle/mascot/waffle-face-happy.png"
+          alt=""
+          width={128}
+          height={128}
+          className="pixelated"
+        />
 
-        {/* Title */}
         <div className="text-center">
-          <h1 className="text-xl font-semibold text-white">稲 ¦ Inari</h1>
-          <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            Sign in to continue
+          <h1 className="font-pixel text-3xl" style={{ color: 'var(--w-ink)' }}>Waffle</h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--w-ink-soft)' }}>
+            Sign in to start building embeds
           </p>
         </div>
 
-        {/* Button */}
         <button
           onClick={handleLogin}
           disabled={status === 'waiting'}
-          className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-          style={{
-            background: status === 'waiting'
-              ? 'rgba(16,185,129,0.3)'
-              : 'linear-gradient(135deg, #10b981, #059669)',
-            color: '#fff',
-            boxShadow: '0 0 20px rgba(16,185,129,0.2)',
-          }}
+          className="w-btn w-full py-2.5 text-base"
         >
-          {status === 'waiting' ? 'Waiting for Discord...' : 'Login with Discord'}
+          {status === 'waiting' ? 'Waiting for Discord...' : 'Sign in with Discord'}
         </button>
 
-        {/* Note */}
-        <p className="text-xs text-center" style={{ color: 'rgba(255,255,255,0.2)' }}>
-          Access restricted to authorized members only
+        {status === 'blocked' && (
+          <p className="text-sm text-center" role="alert" style={{ color: 'var(--w-berry)' }}>
+            Your browser blocked the sign-in window. Allow pop-ups for this page and try again.
+          </p>
+        )}
+
+        <p className="text-xs text-center" style={{ color: 'var(--w-ink-faint)' }}>
+          Waffle works in servers where you have the Manage Server permission.
         </p>
       </div>
     </div>

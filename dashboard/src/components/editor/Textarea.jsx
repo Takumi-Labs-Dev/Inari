@@ -69,11 +69,11 @@ const Textarea = forwardRef(function Textarea(
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex justify-between items-center">
-        <label className="text-[11px] font-semibold uppercase tracking-widest text-obsidian-300">
+        <label className="text-[11px] font-semibold uppercase tracking-widest text-cocoa-600">
           {label}
         </label>
         {maxLength && (
-          <span className={`text-[11px] tabular-nums ${isNearLimit ? 'text-amber-400' : 'text-obsidian-400'}`}>
+          <span className={`text-[11px] tabular-nums ${isNearLimit ? 'text-caramel-600' : 'text-cocoa-500'}`}>
             {remaining}
           </span>
         )}
@@ -82,7 +82,7 @@ const Textarea = forwardRef(function Textarea(
       {showToolbar && (
         <div
           className="flex items-center gap-0.5 px-2 py-1.5 rounded-t-lg"
-          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(16,185,129,0.15)', borderBottom: 'none' }}
+          style={{ background: 'var(--w-card)', border: '1px solid var(--w-line)', borderBottom: 'none' }}
         >
           {FORMATS.map((f) => (
             <button
@@ -96,17 +96,17 @@ const Textarea = forwardRef(function Textarea(
               className="w-7 h-7 rounded-md flex items-center justify-center text-xs transition-colors"
               style={{
                 ...f.style,
-                color: 'rgba(255,255,255,0.5)',
+                color: 'var(--w-ink-soft)',
                 fontSize: f.label === '||' ? 10 : 13,
               }}
-              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(16,185,129,0.1)'}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'var(--w-accent-soft)'}
               onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
             >
               {f.label}
             </button>
           ))}
 
-          <div className="w-px h-4 mx-1" style={{ background: 'rgba(255,255,255,0.08)' }} />
+          <div className="w-px h-4 mx-1" style={{ background: 'var(--w-hover)' }} />
 
           {/* Divider insert */}
           <button
@@ -122,8 +122,8 @@ const Textarea = forwardRef(function Textarea(
               setTimeout(() => el.focus(), 0)
             }}
             className="px-2 h-7 rounded-md text-[10px] transition-colors"
-            style={{ color: 'rgba(255,255,255,0.4)' }}
-            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(16,185,129,0.1)'}
+            style={{ color: 'var(--w-ink-soft)' }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--w-accent-soft)'}
             onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
           >
             ─ line
@@ -139,9 +139,9 @@ const Textarea = forwardRef(function Textarea(
         maxLength={maxLength}
         rows={rows}
         className={`
-          w-full bg-obsidian-800 border border-obsidian-600 px-3 py-2.5
-          text-sm text-obsidian-100 placeholder-obsidian-400 resize-none
-          focus:outline-none focus:border-jade-600 focus:ring-1 focus:ring-jade-600/30
+          w-full bg-cream-50 border border-cream-300 px-3 py-2.5
+          text-sm text-cocoa-900 placeholder-cocoa-400 resize-none
+          focus:outline-none focus:border-toast-700 focus:ring-1 focus:ring-honey-500/40
           transition-colors duration-150 leading-relaxed
           ${showToolbar ? 'rounded-b-lg rounded-t-none' : 'rounded-lg'}
           ${mono ? 'font-mono text-xs' : ''}

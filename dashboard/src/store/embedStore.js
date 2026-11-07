@@ -3,13 +3,46 @@ import { create } from 'zustand'
 const defaultEmbed = {
   title: '',
   description: '',
-  color: 5793266, // #5865F2 Discord blurple
+  color: 14715435, // #E08A2B syrup (Waffle's default accent)
   author: { name: '', icon_url: '' },
   footer: { text: '', icon_url: '' },
   thumbnail: { url: '' },
   image: { url: '' },
   fields: [],
   timestamp: null,
+}
+
+const asText = (v) => (typeof v === 'string' ? v : '')
+const asObject = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v : {})
+
+// Turns ANY object (a saved template, pasted JSON) into a complete, safe embed.
+// Missing parts fall back to empty values, so nothing from the previous embed survives.
+function normalizeEmbed(raw) {
+  const src = asObject(raw)
+  const author = asObject(src.author)
+  const footer = asObject(src.footer)
+  return {
+    title: asText(src.title),
+    description: asText(src.description),
+    color:
+      Number.isInteger(src.color) && src.color >= 0 && src.color <= 0xffffff
+        ? src.color
+        : defaultEmbed.color,
+    author: { name: asText(author.name), icon_url: asText(author.icon_url) },
+    footer: { text: asText(footer.text), icon_url: asText(footer.icon_url) },
+    thumbnail: { url: asText(asObject(src.thumbnail).url) },
+    image: { url: asText(asObject(src.image).url) },
+    fields: Array.isArray(src.fields)
+      ? src.fields
+          .filter((f) => f && typeof f === 'object')
+          .slice(0, 25)
+          .map((f) => ({ name: asText(f.name), value: asText(f.value), inline: f.inline === true }))
+      : [],
+    timestamp:
+      typeof src.timestamp === 'string' && !Number.isNaN(Date.parse(src.timestamp))
+        ? src.timestamp
+        : null,
+  }
 }
 
 export const useEmbedStore = create((set) => ({
@@ -22,6 +55,8 @@ export const useEmbedStore = create((set) => ({
 
   // UI state
   guilds: [],
+  guildsStatus: 'loading', // 'loading' | 'ready' | 'error'
+  guildsError: '',
   channels: [],
   emojis: [],
   isSending: false,
@@ -29,6 +64,9 @@ export const useEmbedStore = create((set) => ({
 
   templates: [],
   setTemplates: (templates) => set({ templates }),
+
+  // Replace the whole embed (used by Templates and JSON import)
+  loadEmbed: (raw) => set({ embed: normalizeEmbed(raw) }),
 
   // Embed updaters
   setEmbed: (key, value) =>
@@ -74,7 +112,8 @@ export const useEmbedStore = create((set) => ({
   setSelectedChannel: (channel) => set({ selectedChannel: channel }),
 
   // Data from API
-  setGuilds: (guilds) => set({ guilds }),
+  setGuilds: (guilds) => set({ guilds, guildsStatus: 'ready', guildsError: '' }),
+  setGuildsError: (message) => set({ guildsStatus: 'error', guildsError: message }),
   setChannels: (channels) => set({ channels }),
   setEmojis: (emojis) => set({ emojis }),
 

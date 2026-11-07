@@ -4,63 +4,48 @@ import { useNavigate } from 'react-router-dom'
 
 const PALETTES = [
   {
-    bot: '雷 ¦ Raijin',
-    role: 'Moderation',
-    key: 'raijin',
+    bot: 'Waffle',
+    role: 'The signature palette',
+    key: 'waffle',
     colors: [
-      { name: 'Ember',      hex: '#ff6b6b' },
-      { name: 'Crimson',    hex: '#e63946' },
-      { name: 'Scarlet',    hex: '#c1121f' },
-      { name: 'Blood',      hex: '#9d0208' },
-      { name: 'Inferno',    hex: '#e85d04' },
-      { name: 'Ash Rose',   hex: '#ffb3b3' },
-      { name: 'Deep Red',   hex: '#6a0572' },
-      { name: 'Obsidian Red', hex: '#4a0010' },
+      { name: 'Butter Cream',  hex: '#fff6e0' },
+      { name: 'Cream',         hex: '#f7e4b8' },
+      { name: 'Batter',        hex: '#ebc48a' },
+      { name: 'Golden Crust',  hex: '#d99a4e' },
+      { name: 'Honey',         hex: '#e8a93c' },
+      { name: 'Syrup Amber',   hex: '#e08a2b' },
+      { name: 'Caramel',       hex: '#b8692f' },
+      { name: 'Toasted Brown', hex: '#8a4b22' },
     ],
   },
   {
-    bot: '恵 ¦ Ebisu',
-    role: 'Shop / Tickets',
-    key: 'ebisu',
+    bot: 'Berries & Leaves',
+    role: 'Fresh toppings',
+    key: 'toppings',
     colors: [
-      { name: 'Lavender',   hex: '#c77dff' },
-      { name: 'Violet',     hex: '#9d4edd' },
-      { name: 'Amethyst',   hex: '#7b2d8b' },
-      { name: 'Royal',      hex: '#5a189a' },
-      { name: 'Deep Plum',  hex: '#3c096c' },
-      { name: 'Soft Lilac', hex: '#e0aaff' },
-      { name: 'Indigo',     hex: '#480ca8' },
-      { name: 'Dusk',       hex: '#240046' },
+      { name: 'Strawberry', hex: '#d9534a' },
+      { name: 'Jam',        hex: '#a93a3a' },
+      { name: 'Blush',      hex: '#f4b8b0' },
+      { name: 'Leaf',       hex: '#7fa650' },
+      { name: 'Moss',       hex: '#5e7f3a' },
+      { name: 'Mint Cream', hex: '#d6e5b8' },
+      { name: 'Cocoa',      hex: '#4a2814' },
+      { name: 'Espresso',   hex: '#2e190c' },
     ],
   },
   {
-    bot: '影 ¦ Kage',
-    role: 'Tracker',
-    key: 'kage',
+    bot: 'Cozy Cafe',
+    role: 'Milk tea pastels',
+    key: 'cafe',
     colors: [
-      { name: 'Sky',        hex: '#90e0ef' },
-      { name: 'Cerulean',   hex: '#48cae4' },
-      { name: 'Ocean',      hex: '#0096c7' },
-      { name: 'Cobalt',     hex: '#0077b6' },
-      { name: 'Deep Sea',   hex: '#023e8a' },
-      { name: 'Ice',        hex: '#caf0f8' },
-      { name: 'Steel',      hex: '#4895ef' },
-      { name: 'Abyss',      hex: '#03045e' },
-    ],
-  },
-  {
-    bot: '稲 ¦ Inari',
-    role: 'Embed Builder',
-    key: 'inari',
-    colors: [
-      { name: 'Mint',       hex: '#6ee7b7' },
-      { name: 'Jade',       hex: '#34d399' },
-      { name: 'Emerald',    hex: '#10b981' },
-      { name: 'Forest',     hex: '#059669' },
-      { name: 'Deep Jade',  hex: '#047857' },
-      { name: 'Sage',       hex: '#a7f3d0' },
-      { name: 'Moss',       hex: '#065f46' },
-      { name: 'Obsidian Jade', hex: '#022c22' },
+      { name: 'Oat Milk',      hex: '#f0dfc4' },
+      { name: 'Latte',         hex: '#c9a27a' },
+      { name: 'Mocha',         hex: '#8b5e3c' },
+      { name: 'Matcha',        hex: '#a9bf7b' },
+      { name: 'Peach',         hex: '#f6c9a0' },
+      { name: 'Honeycomb',     hex: '#f1b84b' },
+      { name: 'Lavender Mist', hex: '#c9b8e0' },
+      { name: 'Sky Cup',       hex: '#a9cfe0' },
     ],
   },
 ]
@@ -82,7 +67,7 @@ function ColorCard({ color, onCopy, onInsert, copied }) {
   return (
     <div
       className="group relative rounded-xl overflow-hidden cursor-pointer transition-transform hover:scale-105"
-      style={{ border: '1px solid rgba(255,255,255,0.06)' }}
+      style={{ border: '1px solid var(--w-line)' }}
     >
       {/* Color swatch */}
       <div
@@ -93,15 +78,15 @@ function ColorCard({ color, onCopy, onInsert, copied }) {
       {/* Hover overlay */}
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5"
-        style={{ background: 'rgba(0,0,0,0.55)' }}
+        style={{ background: 'var(--w-overlay)' }}
       >
         <button
           onClick={() => onCopy(color)}
           className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-colors"
           style={{
-            background: isCopied ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.12)',
-            color: isCopied ? '#34d399' : '#fff',
-            border: '1px solid rgba(255,255,255,0.15)',
+            background: isCopied ? 'var(--w-accent-soft)' : 'var(--w-hover)',
+            color: isCopied ? 'var(--w-accent-ink)' : 'var(--w-on-accent)',
+            border: '1px solid var(--w-line)',
           }}
         >
           {isCopied ? (
@@ -118,7 +103,7 @@ function ColorCard({ color, onCopy, onInsert, copied }) {
         <button
           onClick={() => onInsert(color)}
           className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-colors"
-          style={{ background: 'rgba(16,185,129,0.2)', color: '#34d399', border: '1px solid rgba(16,185,129,0.3)' }}
+          style={{ background: 'var(--w-accent-soft)', color: 'var(--w-accent-ink)', border: '1px solid var(--w-accent-line)' }}
         >
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
@@ -130,12 +115,12 @@ function ColorCard({ color, onCopy, onInsert, copied }) {
       {/* Color info */}
       <div
         className="px-2.5 py-2"
-        style={{ background: 'rgba(255,255,255,0.03)' }}
+        style={{ background: 'var(--w-card)' }}
       >
-        <p className="text-xs font-medium truncate" style={{ color: 'rgba(255,255,255,0.8)' }}>
+        <p className="text-xs font-medium truncate" style={{ color: 'var(--w-ink)' }}>
           {color.name}
         </p>
-        <p className="text-[10px] font-mono mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <p className="text-[10px] font-mono mt-0.5" style={{ color: 'var(--w-ink-soft)' }}>
           {color.hex}
         </p>
       </div>
@@ -151,12 +136,12 @@ function PaletteSection({ palette, onCopy, onInsert, copied }) {
   return (
     <div
       className="rounded-2xl overflow-hidden"
-      style={{ border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}
+      style={{ border: '1px solid var(--w-line)', background: 'var(--w-card)' }}
     >
       {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between px-5 py-4 transition-colors hover:bg-white/[0.02]"
+        className="w-full flex items-center justify-between px-5 py-4 transition-colors hover:bg-cream-200/60"
       >
         <div className="flex items-center gap-3">
           {/* Color dot row */}
@@ -170,17 +155,17 @@ function PaletteSection({ palette, onCopy, onInsert, copied }) {
             ))}
           </div>
           <div className="text-left">
-            <p className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.9)' }}>
+            <p className="text-sm font-semibold" style={{ color: 'var(--w-ink)' }}>
               {palette.bot}
             </p>
-            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
+            <p className="text-xs" style={{ color: 'var(--w-ink-soft)' }}>
               {palette.role}
             </p>
           </div>
         </div>
         <svg
           className={`w-4 h-4 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
-          style={{ color: 'rgba(255,255,255,0.25)' }}
+          style={{ color: 'var(--w-ink-faint)' }}
           fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -215,7 +200,7 @@ function PaletteSection({ palette, onCopy, onInsert, copied }) {
 
 function CustomPaletteBuilder({ onCopy, onInsert, copied }) {
   const [name, setName] = useState('')
-  const [colors, setColors] = useState([{ name: '', hex: '#10b981' }])
+  const [colors, setColors] = useState([{ name: '', hex: '#e8a93c' }])
   const [saved, setSaved] = useState([])
 
   const addColor = () => setColors([...colors, { name: '', hex: '#ffffff' }])
@@ -232,7 +217,7 @@ function CustomPaletteBuilder({ onCopy, onInsert, copied }) {
     if (!name.trim() || colors.length === 0) return
     setSaved([...saved, { bot: name, role: 'Custom', key: Date.now(), colors }])
     setName('')
-    setColors([{ name: '', hex: '#10b981' }])
+    setColors([{ name: '', hex: '#e8a93c' }])
   }
 
   return (
@@ -245,10 +230,10 @@ function CustomPaletteBuilder({ onCopy, onInsert, copied }) {
       {/* Builder */}
       <div
         className="rounded-2xl overflow-hidden"
-        style={{ border: '1px solid rgba(16,185,129,0.15)', background: 'rgba(16,185,129,0.02)' }}
+        style={{ border: '1px solid var(--w-line)', background: 'var(--w-card)' }}
       >
-        <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(16,185,129,0.1)' }}>
-          <p className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.8)' }}>
+        <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--w-line)' }}>
+          <p className="text-sm font-semibold" style={{ color: 'var(--w-ink)' }}>
             New palette
           </p>
         </div>
@@ -262,9 +247,9 @@ function CustomPaletteBuilder({ onCopy, onInsert, copied }) {
             placeholder="Palette name e.g. Event Theme"
             className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
             style={{
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: 'rgba(255,255,255,0.9)',
+              background: 'var(--w-card)',
+              border: '1px solid var(--w-line)',
+              color: 'var(--w-ink)',
             }}
           />
 
@@ -274,7 +259,7 @@ function CustomPaletteBuilder({ onCopy, onInsert, copied }) {
               <div key={i} className="flex items-center gap-2">
                 <div
                   className="w-9 h-9 rounded-lg flex-shrink-0 cursor-pointer border"
-                  style={{ background: c.hex, borderColor: 'rgba(255,255,255,0.1)' }}
+                  style={{ background: c.hex, borderColor: 'var(--w-line)' }}
                   onClick={() => document.getElementById(`cp-${i}`).click()}
                 />
                 <input
@@ -289,7 +274,7 @@ function CustomPaletteBuilder({ onCopy, onInsert, copied }) {
                   value={c.hex}
                   onChange={(e) => updateColor(i, 'hex', e.target.value)}
                   className="w-28 px-2.5 py-2 rounded-lg text-xs font-mono outline-none"
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}
+                  style={{ background: 'var(--w-card)', border: '1px solid var(--w-line)', color: 'var(--w-ink)' }}
                 />
                 <input
                   type="text"
@@ -297,12 +282,12 @@ function CustomPaletteBuilder({ onCopy, onInsert, copied }) {
                   onChange={(e) => updateColor(i, 'name', e.target.value)}
                   placeholder="Color name"
                   className="flex-1 px-2.5 py-2 rounded-lg text-xs outline-none"
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}
+                  style={{ background: 'var(--w-card)', border: '1px solid var(--w-line)', color: 'var(--w-ink)' }}
                 />
                 {colors.length > 1 && (
                   <button
                     onClick={() => removeColor(i)}
-                    style={{ color: 'rgba(239,68,68,0.5)' }}
+                    style={{ color: 'var(--w-berry)' }}
                   >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -317,7 +302,7 @@ function CustomPaletteBuilder({ onCopy, onInsert, copied }) {
             <button
               onClick={addColor}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs transition-colors"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)' }}
+              style={{ background: 'var(--w-card)', border: '1px solid var(--w-line)', color: 'var(--w-ink-soft)' }}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -327,12 +312,7 @@ function CustomPaletteBuilder({ onCopy, onInsert, copied }) {
             <button
               onClick={handleSave}
               disabled={!name.trim()}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium transition-all"
-              style={{
-                background: name.trim() ? 'rgba(16,185,129,0.9)' : 'rgba(16,185,129,0.3)',
-                color: '#fff',
-                cursor: name.trim() ? 'pointer' : 'not-allowed',
-              }}
+              className="w-btn px-4 py-2 text-xs"
             >
               Save palette
             </button>
@@ -361,23 +341,23 @@ export default function ColorPalettes() {
   }
 
   const tabs = [
-    { key: 'bots', label: 'Bot palettes' },
+    { key: 'bots', label: 'Waffle palettes' },
     { key: 'custom', label: 'Custom' },
   ]
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div className="flex flex-col flex-1 min-h-0">
 
       {/* Header */}
       <div
         className="flex items-center justify-between px-6 py-4 flex-shrink-0"
-        style={{ borderBottom: '1px solid rgba(16,185,129,0.1)' }}
+        style={{ borderBottom: '1px solid var(--w-line)' }}
       >
         <div>
-          <h1 className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.9)' }}>
+          <h1 className="font-pixel text-base font-semibold" style={{ color: 'var(--w-ink)' }}>
             Color Palettes
           </h1>
-          <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.3)' }}>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--w-ink-soft)' }}>
             Pick, copy, or insert colors directly into your embed
           </p>
         </div>
@@ -386,7 +366,7 @@ export default function ColorPalettes() {
       {/* Tabs */}
       <div
         className="flex items-center gap-1 px-6 py-2 flex-shrink-0"
-        style={{ borderBottom: '1px solid rgba(16,185,129,0.08)' }}
+        style={{ borderBottom: '1px solid var(--w-line)' }}
       >
         {tabs.map(t => (
           <button
@@ -394,9 +374,9 @@ export default function ColorPalettes() {
             onClick={() => setActiveTab(t.key)}
             className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
             style={{
-              background: activeTab === t.key ? 'rgba(16,185,129,0.15)' : 'transparent',
-              color: activeTab === t.key ? '#34d399' : 'rgba(255,255,255,0.4)',
-              border: activeTab === t.key ? '1px solid rgba(16,185,129,0.25)' : '1px solid transparent',
+              background: activeTab === t.key ? 'var(--w-accent-soft)' : 'transparent',
+              color: activeTab === t.key ? 'var(--w-accent-ink)' : 'var(--w-ink-soft)',
+              border: activeTab === t.key ? '1px solid var(--w-accent-line)' : '1px solid transparent',
             }}
           >
             {t.label}

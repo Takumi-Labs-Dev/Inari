@@ -1,8 +1,8 @@
 {
-  "name": "inari-dashboard",
+  "name": "waffle-dashboard",
   "private": true,
   "version": "0.1.0",
-  "description": "Discord Embed Builder Dashboard",
+  "description": "Waffle: Discord embed builder dashboard",
   "author": "Takumi Labs Dev",
   "main": "electron.cjs",
   "homepage": "./",

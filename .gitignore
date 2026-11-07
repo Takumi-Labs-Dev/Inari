@@ -1,5 +1,5 @@
 # ===========================
-# Inari — Global Gitignore
+# Waffle — Global Gitignore
 # ===========================
 
 # Dependencies
@@ -62,3 +62,4 @@ Thumbs.db
 
 # Local config
 *.local
+bot/data/*.before-multiserver

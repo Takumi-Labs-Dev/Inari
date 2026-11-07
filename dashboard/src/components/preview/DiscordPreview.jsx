@@ -2,17 +2,32 @@ import { useState } from 'react'
 import { useEmbedStore } from '../../store/embedStore'
 
 function intToHex(int) {
-  if (!int) return '#1d9bf0'
+  if (int === null || int === undefined) return '#e08a2b'
   return '#' + int.toString(16).padStart(6, '0')
 }
 
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+// Everything is escaped FIRST, so pasted HTML or scripts can never run.
+// Links are only turned into <a> when they start with http:// or https://.
 function renderMarkdown(text) {
   if (!text) return ''
-  return text
+  return escapeHtml(text)
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g, '<code style="background:rgba(0,0,0,0.3);padding:1px 4px;border-radius:3px;font-size:12px;font-family:monospace">$1</code>')
-    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color:#00aff4">$1</a>')
+    .replace(/`(.+?)`/g, '<code style="background:rgba(0,0,0,0.25);padding:1px 4px;border-radius:3px;font-size:12px;font-family:monospace">$1</code>')
+    .replace(/\[(.+?)\]\((.+?)\)/g, (match, label, url) =>
+      /^https?:\/\//i.test(url)
+        ? `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:#00aff4">${label}</a>`
+        : match
+    )
     .replace(/\n/g, '<br/>')
 }
 
@@ -48,11 +63,11 @@ export default function DiscordPreview() {
 
       {/* Preview toolbar */}
       <div className="flex items-center justify-between px-4 py-2.5 flex-shrink-0"
-        style={{ borderBottom: '1px solid rgba(16,185,129,0.1)', background: 'rgba(13,20,18,0.8)' }}>
+        style={{ borderBottom: '1px solid var(--w-line)', background: 'var(--w-batter)' }}>
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-honey-500 animate-pulse" />
           <span className="text-xs font-semibold uppercase tracking-widest"
-            style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em' }}>
+            style={{ color: 'var(--w-ink-soft)', letterSpacing: '0.1em' }}>
             Live preview
           </span>
         </div>
@@ -64,7 +79,7 @@ export default function DiscordPreview() {
             <button
               onClick={() => setThemeOpen(!themeOpen)}
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors"
-              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)' }}
+              style={{ background: 'var(--w-card)', border: '1px solid var(--w-line)', color: 'var(--w-ink)' }}
             >
               Preview: {t.name}
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -73,13 +88,13 @@ export default function DiscordPreview() {
             </button>
             {themeOpen && (
               <div className="absolute right-0 top-full mt-1 rounded-lg overflow-hidden z-50 w-32"
-                style={{ background: '#0d1412', border: '1px solid rgba(16,185,129,0.15)' }}>
+                style={{ background: 'var(--w-card)', border: '1px solid var(--w-line)' }}>
                 {Object.entries(THEMES).map(([key, val]) => (
                   <button
                     key={key}
                     onClick={() => { setTheme(key); setThemeOpen(false) }}
-                    className="w-full text-left px-3 py-2 text-xs transition-colors hover:bg-white/5"
-                    style={{ color: theme === key ? '#34d399' : 'rgba(255,255,255,0.5)' }}
+                    className="w-full text-left px-3 py-2 text-xs transition-colors hover:bg-cream-200"
+                    style={{ color: theme === key ? 'var(--w-accent-ink)' : 'var(--w-ink-soft)' }}
                   >
                     {val.name}
                   </button>
@@ -90,15 +105,15 @@ export default function DiscordPreview() {
 
           {/* Desktop / Mobile toggle */}
           <div className="flex rounded-lg overflow-hidden"
-            style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+            style={{ border: '1px solid var(--w-line)' }}>
             {['desktop', 'mobile'].map((v) => (
               <button
                 key={v}
                 onClick={() => setViewport(v)}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs capitalize transition-colors"
                 style={{
-                  background: viewport === v ? 'rgba(16,185,129,0.15)' : 'transparent',
-                  color: viewport === v ? '#34d399' : 'rgba(255,255,255,0.4)',
+                  background: viewport === v ? 'var(--w-accent-soft)' : 'transparent',
+                  color: viewport === v ? 'var(--w-accent-ink)' : 'var(--w-ink-soft)',
                 }}
               >
                 {v === 'desktop' ? (
@@ -118,22 +133,13 @@ export default function DiscordPreview() {
         </div>
       </div>
 
-      {/* Discord preview area with glow */}
+      {/* Discord preview area (kept in Discord's own colors on purpose) */}
       <div className="flex-1 overflow-y-auto relative min-h-0"
         style={{ background: t.bg }}>
 
-        {/* Ambient glow — only in dark themes */}
-        {theme !== 'light' && (
-          <div className="absolute inset-0 pointer-events-none"
-            style={{
-              background: 'radial-gradient(ellipse 60% 40% at 70% 80%, rgba(16,185,129,0.06) 0%, transparent 70%)',
-            }}
-          />
-        )}
-
         <div className={`relative p-6 ${viewport === 'mobile' ? 'max-w-sm mx-auto' : ''}`}>
           {!hasContent ? (
-            <div className="flex flex-col items-center justify-center py-20 gap-3 opacity-40">
+            <div className="flex flex-col items-center justify-center py-20 gap-3 opacity-80">
               <svg className="w-10 h-10" style={{ color: t.muted }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.25}
                   d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
@@ -141,19 +147,21 @@ export default function DiscordPreview() {
               <p className="text-sm font-medium" style={{ color: t.muted }}>
                 Start typing to preview your embed
               </p>
-              <p className="text-xs" style={{ color: t.muted, opacity: 0.6 }}>
+              <p className="text-xs" style={{ color: t.muted }}>
                 Your changes will appear here instantly
               </p>
             </div>
           ) : (
             <div className="flex gap-3">
-              <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-sm"
-                style={{ background: 'rgba(16,185,129,0.2)', color: '#34d399' }}>
-                稲
-              </div>
+              <img
+                src="/assets/waffle/brand/waffle-logo-96.png"
+                alt=""
+                className="w-10 h-10 rounded-full flex-shrink-0 object-cover"
+                style={{ background: '#f7e4b8' }}
+              />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="font-semibold text-sm" style={{ color: t.text }}>Inari</span>
+                  <span className="font-semibold text-sm" style={{ color: t.text }}>Waffle</span>
                   <span className="text-[10px] font-bold px-1 py-0.5 rounded-sm"
                     style={{ background: '#5865f2', color: '#fff' }}>APP</span>
                   <span className="text-xs" style={{ color: t.muted }}>

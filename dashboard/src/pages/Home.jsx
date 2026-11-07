@@ -1,103 +1,79 @@
 import { Link } from 'react-router-dom'
-import wallpaper from '/assets/HomeWallpaper.png'
+import InviteButton from '../components/InviteButton'
+import { API_URL as API } from '../api/base.js'
+
+const features = [
+  { label: 'Live preview', desc: 'See your embed the way Discord shows it', emoji: 'waffle-emoji-strawberry.png' },
+  { label: 'All the fields', desc: 'Title, fields, footer, images and more', emoji: 'waffle-emoji-syrup.png' },
+  { label: 'One-click send', desc: 'Pick a channel and send it right away', emoji: 'waffle-emoji-wave.png' },
+]
 
 export default function Home() {
   return (
     <div
-      className="flex flex-col items-center justify-center min-h-screen gap-10 relative px-4"
+      className="relative flex-1 min-h-0 overflow-y-auto"
       style={{
-        backgroundImage: `url(${wallpaper})`,
+        backgroundColor: 'var(--w-bg)',
+        backgroundImage: 'url(/assets/waffle/backgrounds/home-wallpaper.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
       }}
     >
-      {/* Overlay */}
+      {/* Soft butter wash so text stays easy to read on top of the wallpaper */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            'linear-gradient(to bottom, rgba(5,10,8,0.5), rgba(5,10,8,0.7))',
-        }}
+        style={{ background: 'linear-gradient(to bottom, rgba(255,246,224,0.55), rgba(255,246,224,0.82))' }}
       />
 
-      {/* Header */}
-      <div className="relative z-10 text-center">
-        <div
-          className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 backdrop-blur-md"
-          style={{
-            background: 'rgba(16,185,129,0.12)',
-            border: '1px solid rgba(16,185,129,0.25)',
-            boxShadow: '0 0 20px rgba(16,185,129,0.15)',
-          }}
-        >
-          <span className="text-3xl text-emerald-400">稲</span>
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-full gap-8 px-4 py-10">
+        {/* Header */}
+        <div className="text-center">
+          <img
+            src="/assets/waffle/brand/waffle-mascot.png"
+            alt=""
+            width={128}
+            height={128}
+            className="pixelated mx-auto mb-3"
+          />
+          <h1 className="font-pixel text-4xl" style={{ color: 'var(--w-ink)' }}>Waffle</h1>
+          <p className="mt-2 text-base font-semibold" style={{ color: 'var(--w-ink-soft)' }}>
+            A cozy Discord embed builder
+          </p>
         </div>
 
-        <h1 className="text-3xl font-semibold tracking-tight text-white">
-          Inari
-        </h1>
-
-        <p className="mt-2 text-sm text-white/40">
-          Discord embed builder
-        </p>
-      </div>
-
-      {/* Actions */}
-      <div className="relative z-10 flex gap-4">
-        <Link
-          to="/builder"
-          className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:scale-105"
-          style={{
-            background: 'linear-gradient(135deg, #10b981, #059669)',
-            color: '#fff',
-            boxShadow: '0 0 20px rgba(16,185,129,0.25)',
-          }}
-        >
-          Open builder
-        </Link>
-
-        <a
-          href="http://localhost:3003/guilds"
-          target="_blank"
-          rel="noreferrer"
-          className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:scale-105"
-          style={{
-            background: 'rgba(255,255,255,0.05)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            color: 'rgba(255,255,255,0.7)',
-            backdropFilter: 'blur(10px)',
-          }}
-        >
-          API status
-        </a>
-      </div>
-
-      {/* Features */}
-      <div className="relative z-10 grid grid-cols-3 gap-4 w-full max-w-md">
-        {[
-          { label: 'Live preview', desc: 'Accurate Discord rendering' },
-          { label: 'All fields', desc: 'Title, fields, footer, images' },
-          { label: 'One-click send', desc: 'Direct to any channel' },
-        ].map((f) => (
-          <div
-            key={f.label}
-            className="rounded-xl p-4 transition-all hover:scale-[1.03]"
-            style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(16,185,129,0.12)',
-              backdropFilter: 'blur(10px)',
-            }}
+        {/* Actions */}
+        <div className="flex flex-wrap justify-center gap-4">
+          <Link to="/builder" className="w-btn px-6 py-2.5 text-base">
+            Open builder
+          </Link>
+          <InviteButton quiet className="px-6 py-2.5 text-base">Add to a server</InviteButton>
+          <a
+            href={`${API}/api/health`}
+            target="_blank"
+            rel="noreferrer"
+            className="w-btn w-btn-quiet px-6 py-2.5 text-base"
           >
-            <p className="text-xs font-semibold text-emerald-400">
-              {f.label}
-            </p>
+            API status
+          </a>
+        </div>
 
-            <p className="text-[11px] mt-1 leading-snug text-white/40">
-              {f.desc}
-            </p>
-          </div>
-        ))}
+        {/* Features */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-xl">
+          {features.map((f) => (
+            <div key={f.label} className="w-card p-4 text-center">
+              <img
+                src={`/assets/waffle/emoji/${f.emoji}`}
+                alt=""
+                width={32}
+                height={32}
+                className="pixelated mx-auto mb-2"
+              />
+              <p className="font-pixel text-base" style={{ color: 'var(--w-accent-ink)' }}>{f.label}</p>
+              <p className="text-xs mt-1 leading-snug" style={{ color: 'var(--w-ink-soft)' }}>{f.desc}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
