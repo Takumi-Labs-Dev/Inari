@@ -40,30 +40,30 @@ export default function Section({ title, children, defaultOpen = true, optional 
   return (
     <div
       className="rounded-xl overflow-hidden transition-all"
-      style={{ border: '1px solid rgba(16,185,129,0.1)', background: 'rgba(16,185,129,0.02)' }}
+      style={{ border: '1px solid var(--w-line)', background: 'var(--w-card)' }}
     >
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-4 py-3 transition-colors hover:bg-white/[0.02]"
+        className="w-full flex items-center justify-between px-4 py-3 transition-colors hover:bg-cream-200/60"
       >
         <div className="flex items-center gap-2.5">
           {icon && (
-            <span style={{ color: '#34d399', opacity: 0.8 }}>{icon}</span>
+            <span style={{ color: 'var(--w-accent-ink)', opacity: 0.8 }}>{icon}</span>
           )}
           <span className="text-xs font-semibold uppercase tracking-widest"
-            style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '0.1em' }}>
+            style={{ color: 'var(--w-ink)', letterSpacing: '0.1em' }}>
             {title}
           </span>
           {optional && (
             <span className="text-[10px] px-1.5 py-0.5 rounded"
-              style={{ color: 'rgba(255,255,255,0.25)', border: '1px solid rgba(255,255,255,0.1)' }}>
+              style={{ color: 'var(--w-ink-faint)', border: '1px solid var(--w-line)' }}>
               optional
             </span>
           )}
         </div>
         <svg
           className={`w-3.5 h-3.5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-          style={{ color: 'rgba(255,255,255,0.25)' }}
+          style={{ color: 'var(--w-ink-faint)' }}
           fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -71,7 +71,7 @@ export default function Section({ title, children, defaultOpen = true, optional 
       </button>
       {open && (
         <div className="px-4 py-4 flex flex-col gap-4"
-          style={{ borderTop: '1px solid rgba(16,185,129,0.08)' }}>
+          style={{ borderTop: '1px solid var(--w-line)' }}>
           {children}
         </div>
       )}

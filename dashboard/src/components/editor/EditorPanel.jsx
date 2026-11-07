@@ -90,14 +90,14 @@ export default function EditorPanel() {
           <div
             onClick={() => setEmbed('timestamp', embed.timestamp ? null : new Date().toISOString())}
             className={`w-9 h-5 rounded-full transition-colors relative ${
-              embed.timestamp ? 'bg-jade-600' : 'bg-obsidian-600'
+              embed.timestamp ? 'bg-honey-500' : 'bg-cream-300'
             }`}
           >
             <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${
               embed.timestamp ? 'left-4' : 'left-0.5'
             }`} />
           </div>
-          <span className="text-sm text-obsidian-200">Show timestamp</span>
+          <span className="text-sm text-cocoa-700">Show timestamp</span>
         </label>
       </Section>
 

@@ -10,8 +10,8 @@ function createWindow() {
     minWidth: 1024,
     minHeight: 640,
     icon: path.join(__dirname, 'public/assets/icon.ico'),
-    title: '稲 ¦ Inari',
-    backgroundColor: '#0a0a0b',
+    title: 'Waffle',
+    backgroundColor: '#fff6e0',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -34,7 +34,7 @@ function createWindow() {
           width: 500,
           height: 700,
           autoHideMenuBar: true,
-          backgroundColor: '#0a0a0b',
+          backgroundColor: '#fff6e0',
           webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -51,7 +51,7 @@ function createWindow() {
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.executeJavaScript(`
       window.addEventListener('message', (e) => {
-        if (e.data === 'inari-auth-success') {
+        if (e.data === 'waffle-auth-success') {
           window.location.reload()
         }
       })

@@ -1,5 +1,5 @@
-appId: dev.takumilabs.inari
-productName: "稲 ¦ Inari"
+appId: dev.takumilabs.waffle
+productName: "Waffle"
 asar: false
 files:
   - "**/*"
@@ -20,4 +20,4 @@ nsis:
   installerHeaderIcon: public/assets/icon.ico
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: "稲 ¦ Inari"
+  shortcutName: "Waffle"

@@ -31,9 +31,9 @@ if (process.env.SESSION_SECRET && process.env.SESSION_SECRET.trim().length < 32)
 }
 
 if (problems.length > 0) {
-  console.error('[inari] Cannot start. Please fix your .env file:')
+  console.error('[waffle] Cannot start. Please fix your .env file:')
   for (const p of problems) console.error(`  - ${p}`)
-  console.error(`[inari] The file should be here: ${join(rootDir, '.env')}`)
+  console.error(`[waffle] The file should be here: ${join(rootDir, '.env')}`)
   process.exit(1)
 }
 

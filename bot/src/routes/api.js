@@ -198,7 +198,7 @@ app.post('/send-embed', requireAuth, async (req, res) => {
   ]
   if (!perms || !perms.has(needed)) {
     return res.status(403).json({
-      error: 'Inari cannot send embeds in that channel. Give the bot View Channel, Send Messages and Embed Links there.',
+      error: 'Waffle cannot send embeds in that channel. Give the bot View Channel, Send Messages and Embed Links there.',
     })
   }
 
@@ -206,7 +206,7 @@ app.post('/send-embed', requireAuth, async (req, res) => {
     await channel.send({ embeds: [embed] })
     res.json({ success: true })
   } catch (err) {
-    console.error('[inari] send-embed failed:', err)
+    console.error('[waffle] send-embed failed:', err)
     res.status(502).json({ error: 'Discord refused the message. Please try again.' })
   }
 })
@@ -323,7 +323,7 @@ app.use((req, res) => {
 
 // ─── Last-resort error handler ───────────────────────────────────
 app.use((err, req, res, next) => {
-  console.error('[inari] Request error:', err)
+  console.error('[waffle] Request error:', err)
   if (res.headersSent) return next(err)
   const status = err.status && err.status < 500 ? err.status : 500
   res.status(status).json({ error: status < 500 ? 'Invalid request.' : 'Something went wrong.' })
@@ -331,13 +331,13 @@ app.use((err, req, res, next) => {
 
 export function startAPI() {
   const server = app.listen(config.port, config.host, () => {
-    console.log(`[inari] API listening on http://${config.host}:${config.port}`)
+    console.log(`[waffle] API listening on http://${config.host}:${config.port}`)
   })
   server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
-      console.error(`[inari] Port ${config.port} is already in use. Close the other program or change API_PORT in .env.`)
+      console.error(`[waffle] Port ${config.port} is already in use. Close the other program or change API_PORT in .env.`)
     } else {
-      console.error('[inari] API server error:', err)
+      console.error('[waffle] API server error:', err)
     }
     process.exit(1)
   })

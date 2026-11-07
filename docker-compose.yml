@@ -1,3 +1,5 @@
+# Waffle: run with "docker compose up --build"
+# Both services use the same Node 24 base image family (node:24-alpine).
 services:
   bot:
     build: ./bot

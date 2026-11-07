@@ -3,7 +3,7 @@ import { create } from 'zustand'
 const defaultEmbed = {
   title: '',
   description: '',
-  color: 5793266, // #5865F2 Discord blurple
+  color: 14715435, // #E08A2B syrup (Waffle's default accent)
   author: { name: '', icon_url: '' },
   footer: { text: '', icon_url: '' },
   thumbnail: { url: '' },

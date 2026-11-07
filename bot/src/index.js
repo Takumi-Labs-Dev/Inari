@@ -7,28 +7,28 @@ let server = null
 let shuttingDown = false
 
 client.once('clientReady', () => {
-  console.log(`[inari] Logged in as ${client.user.tag}`)
+  console.log(`[waffle] Logged in as ${client.user.tag}`)
   if (!client.guilds.cache.has(config.guildId)) {
-    console.warn('[inari] The bot is not in the server set in DISCORD_GUILD_ID. Invite it first.')
+    console.warn('[waffle] The bot is not in the server set in DISCORD_GUILD_ID. Invite it first.')
   }
   server = startAPI()
 })
 
-client.on('error', (err) => console.error('[inari] Discord client error:', err))
+client.on('error', (err) => console.error('[waffle] Discord client error:', err))
 
 process.on('unhandledRejection', (reason) => {
-  console.error('[inari] Unhandled promise rejection:', reason)
+  console.error('[waffle] Unhandled promise rejection:', reason)
 })
 
 process.on('uncaughtException', (err) => {
-  console.error('[inari] Uncaught exception:', err)
+  console.error('[waffle] Uncaught exception:', err)
   shutdown(1)
 })
 
 function shutdown(code = 0) {
   if (shuttingDown) return
   shuttingDown = true
-  console.log('[inari] Shutting down...')
+  console.log('[waffle] Shutting down...')
 
   const force = setTimeout(() => process.exit(code), 5000)
   force.unref()
@@ -46,7 +46,7 @@ process.on('SIGINT', () => shutdown(0))
 process.on('SIGTERM', () => shutdown(0))
 
 client.login(config.token).catch((err) => {
-  console.error('[inari] Discord login failed. Check DISCORD_TOKEN in your .env file.')
+  console.error('[waffle] Discord login failed. Check DISCORD_TOKEN in your .env file.')
   console.error(err.message)
   process.exit(1)
 })

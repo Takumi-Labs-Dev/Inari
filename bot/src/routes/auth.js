@@ -28,7 +28,7 @@ passport.serializeUser((user, done) => done(null, user))
 passport.deserializeUser((user, done) => done(null, user))
 
 export const sessionMiddleware = session({
-  name: 'inari.sid',
+  name: 'waffle.sid',
   secret: config.sessionSecret,
   resave: false,
   saveUninitialized: false,
@@ -43,6 +43,21 @@ export const sessionMiddleware = session({
 // GET /auth/login
 router.get('/login', passport.authenticate('discord'))
 
+// Small shared look for the two sign-in result pages (cream + brown, cozy).
+// Inline styles only, so the pages work even when the dashboard is not built.
+const pageStyles = `
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:#fff6e0;color:#4a2814;font-family:Nunito,system-ui,-apple-system,'Segoe UI',sans-serif}
+  .card{max-width:340px;margin:16px;padding:28px 32px;text-align:center;background:#fffbef;
+    border:2px solid #8a4b22;border-radius:16px;box-shadow:0 4px 0 rgba(138,75,34,.25)}
+  img{width:96px;height:96px;image-rendering:pixelated}
+  h2{margin:8px 0 6px;font-size:22px}
+  p{margin:0;font-size:15px;line-height:1.45;color:#6b3f20}
+`
+
+const faceImg = (name) =>
+  `<img src="/assets/waffle/mascot/${name}.png" alt="" onerror="this.style.display='none'">`
+
 // GET /auth/callback
 router.get('/callback',
   passport.authenticate('discord', { failureRedirect: '/auth/failed' }),
@@ -50,17 +65,24 @@ router.get('/callback',
     // Only tell the windows we trust (ALLOWED_ORIGINS) that login worked.
     const origins = JSON.stringify(config.allowedOrigins).replace(/</g, '\\u003c')
     res.send(`<!doctype html>
-<html>
-  <body style="background:#0a0a0b;color:#10b981;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0">
-    <div style="text-align:center">
-      <h2>&#10003; Login successful</h2>
-      <p style="color:#808088">Redirecting...</p>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Signed in | Waffle</title>
+    <style>${pageStyles}</style>
+  </head>
+  <body>
+    <div class="card">
+      ${faceImg('waffle-face-happy')}
+      <h2>You're signed in!</h2>
+      <p>Taking you back to Waffle. You can close this window if it stays open.</p>
     </div>
     <script>
       const origins = ${origins}
       if (window.opener) {
         for (const origin of origins) {
-          window.opener.postMessage('inari-auth-success', origin)
+          window.opener.postMessage('waffle-auth-success', origin)
         }
         setTimeout(() => window.close(), 500)
       } else {
@@ -75,11 +97,18 @@ router.get('/callback',
 // GET /auth/failed
 router.get('/failed', (req, res) => {
   res.status(403).send(`<!doctype html>
-<html>
-  <body style="background:#0a0a0b;color:#ef4444;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0">
-    <div style="text-align:center">
-      <h2>&#10007; Access Denied</h2>
-      <p style="color:#808088">You are not a member of the required server.</p>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Can't sign in | Waffle</title>
+    <style>${pageStyles}</style>
+  </head>
+  <body>
+    <div class="card">
+      ${faceImg('waffle-face-oops')}
+      <h2>Oops, the door is locked</h2>
+      <p>Waffle could not find you in the Discord server it is set up for. Join that server, then try signing in again.</p>
     </div>
   </body>
 </html>`)

@@ -1,6 +1,7 @@
 node_modules
 dist
 .env
+.env.*
 release
 .electron-builder-cache
 dist-electron

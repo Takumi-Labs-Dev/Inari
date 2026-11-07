@@ -18,10 +18,10 @@ export default function Builder() {
       <div className="flex flex-1 min-h-0">
 
         {/* Editor — scrollable column */}
-        <div className="w-[420px] flex-shrink-0 border-r border-obsidian-700 flex flex-col min-h-0">
-          <div className="px-4 py-3 border-b border-obsidian-700 flex-shrink-0">
-            <h1 className="text-sm font-semibold text-obsidian-100">Embed editor</h1>
-            <p className="text-xs text-obsidian-400 mt-0.5">Changes reflect instantly in the preview</p>
+        <div className="w-[420px] flex-shrink-0 border-r border-cream-300 flex flex-col min-h-0">
+          <div className="px-4 py-3 border-b border-cream-300 flex-shrink-0">
+            <h1 className="font-pixel text-base font-semibold text-cocoa-900">Embed editor</h1>
+            <p className="text-xs text-cocoa-500 mt-0.5">Changes reflect instantly in the preview</p>
           </div>
           <div className="flex-shrink-0">
             <Toolbar onInsertText={handleInsertText} />
