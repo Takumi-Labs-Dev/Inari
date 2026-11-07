@@ -3,6 +3,7 @@ import passport from 'passport'
 import { Strategy as DiscordStrategy } from 'passport-discord'
 import session from 'express-session'
 import { config } from '../env.js'
+import { forgetUser } from '../access.js'
 
 const router = express.Router()
 
@@ -13,14 +14,16 @@ passport.use(new DiscordStrategy({
   scope: ['identify', 'guilds'],
   state: true, // protects the login against forged callbacks (needs sessions)
 }, (accessToken, refreshToken, profile, done) => {
-  const inGuild = profile.guilds?.some((g) => g.id === config.guildId)
-  if (!inGuild) return done(null, false, { message: 'Not in guild' })
-  // Keep only what the dashboard needs. No tokens, no server list.
+  // Anyone with a Discord account may sign in. What they can DO is decided
+  // per server, from their Manage Server permission (see access.js).
+  // The sign-in token stays on the server (never sent to the browser); it is
+  // used to re-check the person's permissions on every request that needs it.
   return done(null, {
     id: profile.id,
     username: profile.username,
     avatar: profile.avatar,
     discriminator: profile.discriminator,
+    accessToken,
   })
 }))
 
@@ -107,8 +110,8 @@ router.get('/failed', (req, res) => {
   <body>
     <div class="card">
       ${faceImg('waffle-face-oops')}
-      <h2>Oops, the door is locked</h2>
-      <p>Waffle could not find you in the Discord server it is set up for. Join that server, then try signing in again.</p>
+      <h2>Oops, that did not work</h2>
+      <p>Discord did not finish the sign-in. Close this window and try again.</p>
     </div>
   </body>
 </html>`)
@@ -116,6 +119,7 @@ router.get('/failed', (req, res) => {
 
 // GET /auth/logout
 router.get('/logout', (req, res) => {
+  if (req.user?.id) forgetUser(req.user.id)
   req.logout((err) => {
     if (err) return res.status(500).json({ error: 'Logout failed' })
     res.json({ success: true })

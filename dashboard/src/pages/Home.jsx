@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import InviteButton from '../components/InviteButton'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:3003'
 
@@ -47,6 +48,7 @@ export default function Home() {
           <Link to="/builder" className="w-btn px-6 py-2.5 text-base">
             Open builder
           </Link>
+          <InviteButton quiet className="px-6 py-2.5 text-base">Add to a server</InviteButton>
           <a
             href={`${API}/api/health`}
             target="_blank"

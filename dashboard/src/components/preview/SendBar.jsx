@@ -1,113 +1,34 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect } from 'react'
 import { useEmbedStore } from '../../store/embedStore'
-import { getGuilds, getChannels, sendEmbed } from '../../api/index.js'
-
-function Dropdown({ value, onChange, options, placeholder, disabled, icon }) {
-  const [open, setOpen] = useState(false)
-  const ref = useRef(null)
-
-  useEffect(() => {
-    function handle(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handle)
-    return () => document.removeEventListener('mousedown', handle)
-  }, [])
-
-  const selected = options.find(o => o.value === value)
-
-  return (
-    <div className="relative flex-1" ref={ref}>
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={() => !disabled && setOpen(!open)}
-        className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-left transition-colors"
-        style={{
-          background: 'var(--w-card)',
-          border: open ? '1px solid var(--w-accent-line)' : '1px solid var(--w-line)',
-          color: selected ? 'var(--w-ink)' : 'var(--w-ink-soft)',
-          opacity: disabled ? 0.4 : 1,
-          cursor: disabled ? 'not-allowed' : 'pointer',
-        }}
-      >
-        {icon && <span style={{ color: 'var(--w-ink-soft)', fontSize: 13 }}>{icon}</span>}
-        <span className="flex-1 truncate">
-          {selected ? selected.label : placeholder}
-        </span>
-        <svg className={`w-3.5 h-3.5 flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
-          style={{ color: 'var(--w-ink-soft)' }}
-          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-
-      {open && (
-        <div
-          className="absolute bottom-full left-0 right-0 mb-1 rounded-xl overflow-hidden z-50 max-h-56 overflow-y-auto"
-          style={{ background: 'var(--w-card)', border: '1px solid var(--w-accent-line)', boxShadow: 'var(--w-shadow)' }}
-        >
-          {options.length === 0 ? (
-            <div className="px-3 py-3 text-sm" style={{ color: 'var(--w-ink-faint)' }}>
-              No options
-            </div>
-          ) : (
-            options.map((o) => (
-              <button
-                key={o.value}
-                type="button"
-                onClick={() => { onChange(o.value); setOpen(false) }}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-left transition-colors hover:bg-cream-200"
-                style={{
-                  color: o.value === value ? 'var(--w-accent-ink)' : 'var(--w-ink)',
-                  background: o.value === value ? 'var(--w-accent-soft)' : 'transparent',
-                }}
-              >
-                {o.icon && (
-                  <img src={o.icon} alt="" className="w-5 h-5 rounded-full flex-shrink-0" />
-                )}
-                <span className="truncate">{o.label}</span>
-                {o.value === value && (
-                  <svg className="w-3.5 h-3.5 ml-auto flex-shrink-0" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" strokeWidth={2.5} style={{ color: 'var(--w-accent-ink)' }}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                )}
-              </button>
-            ))
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
+import { getChannels, sendEmbed } from '../../api/index.js'
+import Dropdown from '../ui/Dropdown'
 
 export default function SendBar() {
   const {
-    guilds, channels,
+    channels,
     selectedGuild, selectedChannel,
-    setGuilds, setChannels,
-    setSelectedGuild, setSelectedChannel,
+    setChannels,
+    setSelectedChannel,
     embed, isSending, sendStatus,
     setIsSending, setSendStatus, resetEmbed,
   } = useEmbedStore()
 
+  // The server itself is chosen in the bar at the top of the page.
   useEffect(() => {
-    getGuilds()
-      .then((r) => setGuilds(r.data))
-      .catch((err) => console.error('guilds error:', err))
-  }, [])
-
-  useEffect(() => {
-    if (selectedGuild) getChannels(selectedGuild.id).then((r) => setChannels(r.data))
+    if (!selectedGuild) { setChannels([]); return }
+    let current = true
+    getChannels(selectedGuild.id)
+      .then((r) => { if (current) setChannels(r.data) })
+      .catch(() => { if (current) setChannels([]) })
+    return () => { current = false }
   }, [selectedGuild])
 
   const handleSend = async () => {
-    if (!selectedChannel || isSending) return
+    if (!selectedGuild || !selectedChannel || isSending) return
     setIsSending(true)
     setSendStatus(null)
     try {
-      await sendEmbed({ channelId: selectedChannel.id, embed })
+      await sendEmbed(selectedGuild.id, { channelId: selectedChannel.id, embed })
       setSendStatus('success')
       setTimeout(() => setSendStatus(null), 3000)
     } catch {
@@ -117,12 +38,6 @@ export default function SendBar() {
       setIsSending(false)
     }
   }
-
-  const guildOptions = guilds.map(g => ({
-    value: g.id,
-    label: g.name,
-    icon: g.icon,
-  }))
 
   const channelOptions = channels.map(c => ({
     value: c.id,
@@ -135,18 +50,10 @@ export default function SendBar() {
       style={{ borderTop: '1px solid var(--w-line)', background: 'var(--w-batter)' }}
     >
       <Dropdown
-        value={selectedGuild?.id || ''}
-        onChange={(id) => setSelectedGuild(guilds.find(g => g.id === id) || null)}
-        options={guildOptions}
-        placeholder="Select server..."
-        icon="⊞"
-      />
-
-      <Dropdown
         value={selectedChannel?.id || ''}
         onChange={(id) => setSelectedChannel(channels.find(c => c.id === id) || null)}
         options={channelOptions}
-        placeholder="Select channel..."
+        placeholder={selectedGuild ? 'Select channel...' : 'Pick a server at the top first'}
         disabled={!selectedGuild}
         icon="#"
       />

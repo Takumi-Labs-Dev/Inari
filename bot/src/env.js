@@ -12,7 +12,6 @@ const REQUIRED = [
   'DISCORD_TOKEN',
   'DISCORD_CLIENT_ID',
   'DISCORD_CLIENT_SECRET',
-  'DISCORD_GUILD_ID',
   'REDIRECT_URI',
   'SESSION_SECRET',
 ]
@@ -37,11 +36,18 @@ if (problems.length > 0) {
   process.exit(1)
 }
 
+function legacyGuildId() {
+  const value = process.env.DISCORD_GUILD_ID?.trim()
+  return value && !isPlaceholder(value) && /^\d{15,25}$/.test(value) ? value : null
+}
+
 export const config = {
   token: process.env.DISCORD_TOKEN.trim(),
   clientId: process.env.DISCORD_CLIENT_ID.trim(),
   clientSecret: process.env.DISCORD_CLIENT_SECRET.trim(),
-  guildId: process.env.DISCORD_GUILD_ID.trim(),
+  // Optional. Only used ONCE, to move templates/vault items saved before
+  // Waffle became multi-server into that server. Safe to delete from .env afterwards.
+  legacyGuildId: legacyGuildId(),
   redirectUri: process.env.REDIRECT_URI.trim(),
   sessionSecret: process.env.SESSION_SECRET.trim(),
   cookieSecure: process.env.COOKIE_SECURE === 'true',

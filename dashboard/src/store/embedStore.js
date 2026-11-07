@@ -55,6 +55,8 @@ export const useEmbedStore = create((set) => ({
 
   // UI state
   guilds: [],
+  guildsStatus: 'loading', // 'loading' | 'ready' | 'error'
+  guildsError: '',
   channels: [],
   emojis: [],
   isSending: false,
@@ -110,7 +112,8 @@ export const useEmbedStore = create((set) => ({
   setSelectedChannel: (channel) => set({ selectedChannel: channel }),
 
   // Data from API
-  setGuilds: (guilds) => set({ guilds }),
+  setGuilds: (guilds) => set({ guilds, guildsStatus: 'ready', guildsError: '' }),
+  setGuildsError: (message) => set({ guildsStatus: 'error', guildsError: message }),
   setChannels: (channels) => set({ channels }),
   setEmojis: (emojis) => set({ emojis }),
 

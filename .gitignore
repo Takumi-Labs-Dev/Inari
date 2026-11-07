@@ -62,3 +62,4 @@ Thumbs.db
 
 # Local config
 *.local
+bot/data/*.before-multiserver

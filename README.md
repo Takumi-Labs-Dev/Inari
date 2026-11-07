@@ -25,7 +25,7 @@
 
 Waffle is a Discord embed builder with a live web dashboard and a cozy pixel-art look. Design rich embeds visually, preview them in a Discord-style replica, and send them straight to a channel, all without writing code.
 
-Waffle is currently **single-server**: it signs in with Discord OAuth2 and only lets members of the one server set in `DISCORD_GUILD_ID` use the dashboard. A multi-server version is planned.
+Waffle works in **any server**. Anyone can sign in with Discord, and for each server they can use Waffle only if they own it or have the **Manage Server** (or Administrator) permission there. Waffle checks this with Discord on every request, not just at sign-in. Templates and the Vault are saved per server.
 
 > Waffle was previously called Inari. Your old `inari.db` is copied to `waffle.db` automatically on first start (the old file is never deleted).
 
@@ -33,14 +33,15 @@ Waffle is currently **single-server**: it signs in with Discord OAuth2 and only 
 
 ## ✦ Features
 
-- **Discord OAuth2 sign-in**, limited to members of your configured server
+- **Discord OAuth2 sign-in**, with access decided per server (Manage Server or higher)
+- **Multi-server**: pick the server at the top, or add Waffle to a new one with one click
 - **Live preview** with Dark, Light and AMOLED Discord themes
 - **Full embed control**: title, description, author, footer, fields, thumbnail, image, color, timestamp
 - **Code block inserter** with a language picker
 - **Emoji picker** that loads your real server emojis (animated ones too)
 - **JSON import / export** for any Discord embed
-- **Templates**: save named embed presets and reload them in one click
-- **Vault**: keep image URLs with live previews (Profiles, Thumbnails, Images)
+- **Templates**: save named embed presets per server and reload them in one click
+- **Vault**: keep image URLs per server with live previews (Profiles, Thumbnails, Images)
 - **Color palettes**: Waffle, Berries & Leaves, Cozy Cafe, plus a custom picker
 - **Desktop / mobile preview** toggle
 - **Direct send**: choose the server and channel, then send
@@ -103,7 +104,9 @@ npm install
 npm start
 ```
 
-Open http://localhost:3003 and click **Sign in with Discord**.
+Open http://localhost:3003 and click **Sign in with Discord**. Then use **Add Waffle to a server** (top right) to invite the bot to a server you manage, and pick that server in the bar at the top.
+
+The invite only asks for the permissions Waffle needs: View Channel, Send Messages and Embed Links.
 
 ### 3b. Or run with Docker
 
@@ -135,9 +138,10 @@ The packaged app opens `http://localhost:3003`, so the bot must be running first
 ├── bot/                  # Discord bot + REST API
 │   ├── src/
 │   │   ├── index.js      # Entry point
+│   │   ├── access.js     # Which servers a person may manage (asks Discord)
 │   │   ├── env.js        # .env loading and checks
 │   │   ├── client.js     # Discord client
-│   │   ├── db.js         # SQLite setup (waffle.db)
+│   │   ├── db.js         # SQLite setup (waffle.db) and upgrades
 │   │   └── routes/
 │   │       ├── api.js    # Express API + dashboard static files
 │   │       └── auth.js   # Discord OAuth2 + session

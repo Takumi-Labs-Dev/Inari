@@ -8,10 +8,18 @@ let shuttingDown = false
 
 client.once('clientReady', () => {
   console.log(`[waffle] Logged in as ${client.user.tag}`)
-  if (!client.guilds.cache.has(config.guildId)) {
-    console.warn('[waffle] The bot is not in the server set in DISCORD_GUILD_ID. Invite it first.')
-  }
+  console.log(`[waffle] Serving ${client.guilds.cache.size} server(s)`)
   server = startAPI()
+})
+
+client.on('guildCreate', (guild) => {
+  console.log(`[waffle] Added to server: ${guild.name} (${guild.id})`)
+})
+
+// Saved templates and vault items are kept when the bot is removed,
+// so nothing is lost if someone adds Waffle back later.
+client.on('guildDelete', (guild) => {
+  console.log(`[waffle] Removed from server: ${guild.name ?? 'unknown'} (${guild.id})`)
 })
 
 client.on('error', (err) => console.error('[waffle] Discord client error:', err))

@@ -86,7 +86,7 @@ export default function Login() {
         )}
 
         <p className="text-xs text-center" style={{ color: 'var(--w-ink-faint)' }}>
-          For now, only members of the Discord server this bot is set up for can sign in.
+          Waffle works in servers where you have the Manage Server permission.
         </p>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { getVault, addVaultItem, deleteVaultItem } from '../api/index.js'
+import { getVault, addVaultItem, deleteVaultItem, errorMessage } from '../api/index.js'
+import NeedServer from '../components/NeedServer'
 import { useEmbedStore } from '../store/embedStore'
 import { useNavigate } from 'react-router-dom'
 
@@ -44,7 +45,7 @@ function CheckIcon() {
   )
 }
 
-function VaultCard({ item, onDelete, onInsert, onCopy, copied, apiUrl }) {
+function VaultCard({ item, onDelete, onInsert, onCopy, copied }) {
   const [imgError, setImgError] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
@@ -125,7 +126,14 @@ function VaultCard({ item, onDelete, onInsert, onCopy, copied, apiUrl }) {
   )
 }
 
+// Each server has its own vault: pick one, and this page starts fresh for it.
 export default function Vault() {
+  const guildId = useEmbedStore((s) => s.selectedGuild?.id)
+  if (!guildId) return <NeedServer title="Vault" />
+  return <VaultPage key={guildId} guildId={guildId} />
+}
+
+function VaultPage({ guildId }) {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('All')
@@ -136,11 +144,13 @@ export default function Vault() {
   const [adding, setAdding] = useState(false)
   const [copied, setCopied] = useState(null)
   const { setNestedEmbed } = useEmbedStore()
+  const [addError, setAddError] = useState('')
   const navigate = useNavigate()
 
   const load = () => {
-    getVault()
+    getVault(guildId)
       .then(r => setItems(r.data))
+      .catch(() => setItems([]))
       .finally(() => setLoading(false))
   }
 
@@ -151,20 +161,23 @@ export default function Vault() {
   const handleAdd = async () => {
     if (!newUrl.trim()) return
     setAdding(true)
+    setAddError('')
     try {
-      await addVaultItem({ url: resolved.url, label: newLabel, category: newCategory })
+      await addVaultItem(guildId, { url: resolved.url, label: newLabel, category: newCategory })
       setNewUrl('')
       setNewLabel('')
       setNewCategory('Images')
       setShowAdd(false)
       load()
+    } catch (err) {
+      setAddError(errorMessage(err, 'Could not add the image.'))
     } finally {
       setAdding(false)
     }
   }
 
   const handleDelete = async (id) => {
-    await deleteVaultItem(id)
+    await deleteVaultItem(guildId, id)
     load()
   }
 
@@ -188,7 +201,7 @@ export default function Vault() {
     : items.filter(i => i.category === activeCategory)
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div className="flex flex-col flex-1 min-h-0">
 
       {/* Header */}
       <div
@@ -202,7 +215,7 @@ export default function Vault() {
           </p>
         </div>
         <button
-          onClick={() => setShowAdd(true)}
+          onClick={() => { setAddError(''); setShowAdd(true) }}
           className="w-btn px-4 py-2 text-sm"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -417,12 +430,15 @@ export default function Vault() {
               </div>
             </div>
 
+            {addError && (
+              <p className="px-5 pb-3 text-xs" role="alert" style={{ color: 'var(--w-berry)' }}>{addError}</p>
+            )}
             <div
               className="flex items-center justify-end gap-2 px-5 py-4"
               style={{ borderTop: '1px solid var(--w-line)' }}
             >
               <button
-                onClick={() => setShowAdd(false)}
+                onClick={() => { setShowAdd(false); setAddError('') }}
                 className="px-4 py-2 rounded-lg text-sm transition-colors"
                 style={{ color: 'var(--w-ink-soft)' }}
               >

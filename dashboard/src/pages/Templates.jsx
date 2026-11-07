@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useEmbedStore } from '../store/embedStore'
-import { getTemplates, getTemplate, createTemplate, updateTemplate, deleteTemplate } from '../api/index.js'
+import { getTemplates, getTemplate, createTemplate, deleteTemplate, errorMessage } from '../api/index.js'
+import NeedServer from '../components/NeedServer'
 import { useNavigate } from 'react-router-dom'
 
 function timeAgo(unix) {
@@ -11,7 +12,14 @@ function timeAgo(unix) {
   return `${Math.floor(diff / 86400)}d ago`
 }
 
+// Each server has its own templates: pick one, and this page starts fresh for it.
 export default function Templates() {
+  const guildId = useEmbedStore((s) => s.selectedGuild?.id)
+  if (!guildId) return <NeedServer title="Templates" />
+  return <TemplatesPage key={guildId} guildId={guildId} />
+}
+
+function TemplatesPage({ guildId }) {
   const { embed, loadEmbed, setTemplates, templates } = useEmbedStore()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -19,11 +27,13 @@ export default function Templates() {
   const [saveName, setSaveName] = useState('')
   const [saveDesc, setSaveDesc] = useState('')
   const [deleteId, setDeleteId] = useState(null)
+  const [saveError, setSaveError] = useState('')
   const navigate = useNavigate()
 
   const load = () => {
-    getTemplates()
+    getTemplates(guildId)
       .then((r) => setTemplates(r.data))
+      .catch(() => setTemplates([]))
       .finally(() => setLoading(false))
   }
 
@@ -32,12 +42,15 @@ export default function Templates() {
   const handleSave = async () => {
     if (!saveName.trim()) return
     setSaving(true)
+    setSaveError('')
     try {
-      await createTemplate({ name: saveName, description: saveDesc, embed })
+      await createTemplate(guildId, { name: saveName, description: saveDesc, embed })
       setSaveName('')
       setSaveDesc('')
       setShowSave(false)
       load()
+    } catch (err) {
+      setSaveError(errorMessage(err, 'Could not save the template.'))
     } finally {
       setSaving(false)
     }
@@ -45,7 +58,7 @@ export default function Templates() {
 
   const handleLoad = async (id) => {
     try {
-      const res = await getTemplate(id)
+      const res = await getTemplate(guildId, id)
       loadEmbed(res.data.embed)
       navigate('/builder')
     } catch {
@@ -54,13 +67,13 @@ export default function Templates() {
   }
 
   const handleDelete = async (id) => {
-    await deleteTemplate(id)
+    await deleteTemplate(guildId, id)
     setDeleteId(null)
     load()
   }
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div className="flex flex-col flex-1 min-h-0">
 
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 flex-shrink-0"
@@ -74,7 +87,7 @@ export default function Templates() {
           </p>
         </div>
         <button
-          onClick={() => setShowSave(true)}
+          onClick={() => { setSaveError(''); setShowSave(true) }}
           className="w-btn px-4 py-2 text-sm"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -214,9 +227,12 @@ export default function Templates() {
                 />
               </div>
             </div>
+            {saveError && (
+              <p className="px-5 pb-3 text-xs" role="alert" style={{ color: 'var(--w-berry)' }}>{saveError}</p>
+            )}
             <div className="flex items-center justify-end gap-2 px-5 py-4"
               style={{ borderTop: '1px solid var(--w-line)' }}>
-              <button onClick={() => setShowSave(false)}
+              <button onClick={() => { setShowSave(false); setSaveError('') }}
                 className="px-4 py-2 rounded-lg text-sm transition-colors"
                 style={{ color: 'var(--w-ink-soft)' }}>
                 Cancel
