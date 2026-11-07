@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-
-const API = import.meta.env.VITE_API_URL || 'http://localhost:3003'
+import { API_URL as API } from '../api/base.js'
 
 export default function Login() {
   const [status, setStatus] = useState('idle') // idle | waiting | blocked

@@ -2,6 +2,8 @@ import express from 'express'
 import passport from 'passport'
 import { Strategy as DiscordStrategy } from 'passport-discord'
 import session from 'express-session'
+import { randomBytes } from 'crypto'
+import { SqliteSessionStore } from '../sessionStore.js'
 import { config } from '../env.js'
 import { forgetUser } from '../access.js'
 
@@ -32,6 +34,7 @@ passport.deserializeUser((user, done) => done(null, user))
 
 export const sessionMiddleware = session({
   name: 'waffle.sid',
+  store: new SqliteSessionStore(),
   secret: config.sessionSecret,
   resave: false,
   saveUninitialized: false,
@@ -58,8 +61,23 @@ const pageStyles = `
   p{margin:0;font-size:15px;line-height:1.45;color:#6b3f20}
 `
 
-const faceImg = (name) =>
-  `<img src="/assets/waffle/mascot/${name}.png" alt="" onerror="this.style.display='none'">`
+const faceImg = (name) => `<img src="/assets/waffle/mascot/${name}.png" alt="">`
+
+// These two pages are tiny and self-contained, so they get their own strict
+// Content-Security-Policy. Only the page's own scripts (marked with a one-time
+// nonce) may run.
+function useNonce(res) {
+  const nonce = randomBytes(16).toString('base64')
+  res.set(
+    'Content-Security-Policy',
+    `default-src 'none'; script-src 'nonce-${nonce}'; style-src 'unsafe-inline'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`
+  )
+  return nonce
+}
+
+// If the mascot cannot load (for example the dashboard is not built), hide it quietly.
+const hideBrokenImage = (nonce) =>
+  `<script nonce="${nonce}">document.querySelector('img').addEventListener('error', function (e) { e.target.style.display = 'none' })</script>`
 
 // GET /auth/callback
 router.get('/callback',
@@ -67,6 +85,7 @@ router.get('/callback',
   (req, res) => {
     // Only tell the windows we trust (ALLOWED_ORIGINS) that login worked.
     const origins = JSON.stringify(config.allowedOrigins).replace(/</g, '\\u003c')
+    const nonce = useNonce(res)
     res.send(`<!doctype html>
 <html lang="en">
   <head>
@@ -81,7 +100,8 @@ router.get('/callback',
       <h2>You're signed in!</h2>
       <p>Taking you back to Waffle. You can close this window if it stays open.</p>
     </div>
-    <script>
+    ${hideBrokenImage(nonce)}
+    <script nonce="${nonce}">
       const origins = ${origins}
       if (window.opener) {
         for (const origin of origins) {
@@ -99,6 +119,7 @@ router.get('/callback',
 
 // GET /auth/failed
 router.get('/failed', (req, res) => {
+  const nonce = useNonce(res)
   res.status(403).send(`<!doctype html>
 <html lang="en">
   <head>
@@ -113,6 +134,7 @@ router.get('/failed', (req, res) => {
       <h2>Oops, that did not work</h2>
       <p>Discord did not finish the sign-in. Close this window and try again.</p>
     </div>
+    ${hideBrokenImage(nonce)}
   </body>
 </html>`)
 })

@@ -9,9 +9,42 @@ import { client } from '../client.js'
 import db from '../db.js'
 import { config } from '../env.js'
 import { getManageableGuilds, guildIconUrl } from '../access.js'
+import { rateLimit, byUser } from '../rateLimit.js'
 
 const app = express()
 app.disable('x-powered-by')
+
+// When Waffle sits behind a proxy that handles HTTPS (hosting platforms, nginx),
+// trust it so the real visitor address and "this was HTTPS" are known.
+app.set('trust proxy', config.trustProxy)
+
+// ─── Security headers ────────────────────────────────────────────
+// The dashboard only needs its own files, Google Fonts, and images from the web
+// (Vault images and Discord avatars). Everything else is blocked.
+const CONTENT_SECURITY_POLICY = [
+  "default-src 'self'",
+  "script-src 'self'",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com",
+  "img-src 'self' data: blob: http: https:",
+  "connect-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+].join('; ')
+
+app.use((req, res, next) => {
+  res.set({
+    'Content-Security-Policy': CONTENT_SECURITY_POLICY,
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+  })
+  if (config.cookieSecure) res.set('Strict-Transport-Security', 'max-age=15552000')
+  next()
+})
 
 // ─── CORS: only the origins listed in ALLOWED_ORIGINS ────────────
 app.use(cors({
@@ -28,10 +61,33 @@ app.use(sessionMiddleware)
 app.use(passport.initialize())
 app.use(passport.session())
 
+// Slow down people hammering the sign-in (the dashboard's own polling of /auth/me is not counted)
+app.use(['/auth/login', '/auth/callback'], rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 30,
+  message: 'Too many sign-in attempts. Please wait a few minutes.',
+}))
 app.use('/auth', authRouter)
 
 // ─── Dashboard static files ──────────────────────────────────────
-app.use(express.static(config.dashboardDist))
+// Vite names its main files with a content hash, so those can be cached for a long time.
+app.use(express.static(config.dashboardDist, {
+  setHeaders(res, filePath) {
+    if (/[\\/]assets[\\/][^\\/]+-[A-Za-z0-9_-]{8}\.(js|css)$/.test(filePath)) {
+      res.set('Cache-Control', 'public, max-age=31536000, immutable')
+    } else if (filePath.endsWith('index.html')) {
+      res.set('Cache-Control', 'no-cache')
+    }
+  },
+}))
+
+// Everything below is the API: a generous limit per person (or address if signed out)
+app.use(rateLimit({
+  windowMs: 60 * 1000,
+  max: 300,
+  key: byUser,
+  message: 'Too many requests. Please slow down for a moment.',
+}))
 
 // ─── Helpers ─────────────────────────────────────────────────────
 const VAULT_CATEGORIES = ['Profiles', 'Thumbnails', 'Images']
@@ -213,7 +269,14 @@ app.get('/guilds/:guildId/emojis', requireAuth, requireGuildAccess, (req, res) =
   res.json(emojis)
 })
 
-app.post('/guilds/:guildId/send-embed', requireAuth, requireGuildAccess, async (req, res) => {
+const sendLimit = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  key: byUser,
+  message: 'You are sending too fast. Wait a few seconds and try again.',
+})
+
+app.post('/guilds/:guildId/send-embed', requireAuth, sendLimit, requireGuildAccess, async (req, res) => {
   const { channelId, embed: rawEmbed } = req.body ?? {}
 
   if (!isSnowflake(channelId)) {
@@ -253,7 +316,15 @@ app.post('/guilds/:guildId/send-embed', requireAuth, requireGuildAccess, async (
 
 // ─── Templates (saved per server) ────────────────────────────────
 const guildRoute = (path) => `/guilds/:guildId${path}`
-const guardGuild = [requireAuth, requireGuildAccess]
+
+const writeLimit = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  key: byUser,
+  message: 'You are saving too quickly. Please wait a moment.',
+})
+const limitWrites = (req, res, next) => (req.method === 'GET' ? next() : writeLimit(req, res, next))
+const guardGuild = [requireAuth, limitWrites, requireGuildAccess]
 
 app.get(guildRoute('/templates'), guardGuild, (req, res) => {
   const templates = db.prepare(`

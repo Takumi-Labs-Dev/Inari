@@ -1,6 +1,19 @@
 const { app, BrowserWindow, shell, session } = require('electron')
 const path = require('path')
 
+// The installed app is a window onto your Waffle website. Change "url" in
+// waffle-app.json (for example to https://waffle.example.com) BEFORE building the installer.
+function readAppUrl() {
+  try {
+    const config = require('./waffle-app.json')
+    const url = new URL(config.url)
+    return url.origin
+  } catch {
+    return 'http://localhost:3003'
+  }
+}
+const APP_URL = readAppUrl()
+
 let mainWindow
 
 function createWindow() {
@@ -21,13 +34,13 @@ function createWindow() {
   })
 
   if (app.isPackaged) {
-    mainWindow.loadURL('http://localhost:3003')
+    mainWindow.loadURL(APP_URL)
   } else {
     mainWindow.loadURL('http://localhost:5173')
   }
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('http://localhost:3003/auth')) {
+    if (url.startsWith(`${APP_URL}/auth`)) {
       return {
         action: 'allow',
         overrideBrowserWindowOptions: {

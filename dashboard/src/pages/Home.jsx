@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import InviteButton from '../components/InviteButton'
-
-const API = import.meta.env.VITE_API_URL || 'http://localhost:3003'
+import { API_URL as API } from '../api/base.js'
 
 const features = [
   { label: 'Live preview', desc: 'See your embed the way Discord shows it', emoji: 'waffle-emoji-strawberry.png' },

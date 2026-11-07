@@ -60,7 +60,7 @@ Waffle works in **any server**. Anyone can sign in with Discord, and for each se
 | Styling   | Tailwind CSS v4            |
 | Storage   | SQLite (better-sqlite3)    |
 | Auth      | Passport + Discord OAuth2  |
-| Hosting   | Docker + nginx             |
+| Hosting   | Docker (one image)         |
 | Desktop   | Electron                   |
 
 Fonts: [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans) (headings and buttons) and [Nunito](https://fonts.google.com/specimen/Nunito) (body), both loaded from Google Fonts.
@@ -111,14 +111,24 @@ The invite only asks for the permissions Waffle needs: View Channel, Send Messag
 ### 3b. Or run with Docker
 
 ```bash
-cd dashboard
-npm install
-npm run build
-cd ..
-docker compose up --build
+docker compose up --build -d
 ```
 
-The bot serves the dashboard at http://localhost:3003.
+One image holds the bot and the dashboard (the dashboard is built inside the image, so you do not need to run `npm run build` first). Open http://localhost:3003. Your data lives in `bot/data` and survives rebuilds. Stop any `node src/index.js` run first, because both use port 3003.
+
+```bash
+docker ps                 # STATUS should say (healthy)
+docker compose logs -f    # watch the bot
+docker compose down       # stop
+```
+
+### Hosting settings (when you put Waffle on a public address)
+
+- Set `REDIRECT_URI` in `.env` to your public https address (for example `https://waffle.example.com/auth/callback`) and add the same address in the Discord Developer Portal under OAuth2 > Redirects.
+- Secure cookies and proxy trust are then switched on automatically. `COOKIE_SECURE` and `TRUST_PROXY` only exist to override that.
+- Set `ALLOWED_ORIGINS` to the public site address.
+- Sign-ins are saved (encrypted) in `bot/data/waffle.db`, so people stay signed in across restarts. Changing `SESSION_SECRET` signs everyone out.
+- Built in: rate limits, security headers (CSP, HSTS on https) and per-person sending limits.
 
 ### Desktop app (Electron)
 
@@ -128,7 +138,7 @@ npm run electron:dev      # development: starts Vite and opens the window
 npm run electron:build    # builds the Windows installer into dashboard/release
 ```
 
-The packaged app opens `http://localhost:3003`, so the bot must be running first.
+The packaged app is a window onto your Waffle site. The address is in `dashboard/waffle-app.json` (default `http://localhost:3003`). Change it to your public address before running `npm run electron:build` and the installer opens that site instead. The site must be running first.
 
 ---
 
@@ -145,14 +155,14 @@ The packaged app opens `http://localhost:3003`, so the bot must be running first
 │   │   └── routes/
 │   │       ├── api.js    # Express API + dashboard static files
 │   │       └── auth.js   # Discord OAuth2 + session
-│   └── Dockerfile
 │
 ├── dashboard/            # React dashboard
 │   ├── public/assets/    # Pixel-art assets (waffle/...) and icon.ico
 │   ├── src/              # components, pages, store, api client
-│   ├── electron.cjs      # Electron main process
-│   └── Dockerfile
+│   ├── waffle-app.json   # Address the desktop app opens
+│   └── electron.cjs      # Electron main process
 │
+├── Dockerfile            # One image: bot + dashboard
 ├── docker-compose.yml
 └── .env
 ```

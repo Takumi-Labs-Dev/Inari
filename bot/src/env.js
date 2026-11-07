@@ -41,6 +41,25 @@ function legacyGuildId() {
   return value && !isPlaceholder(value) && /^\d{15,25}$/.test(value) ? value : null
 }
 
+const redirectUri = process.env.REDIRECT_URI.trim()
+const isHttps = redirectUri.startsWith('https://')
+
+// COOKIE_SECURE=true/false wins if set; otherwise it follows REDIRECT_URI.
+const cookieSecure = process.env.COOKIE_SECURE
+  ? process.env.COOKIE_SECURE.trim() === 'true'
+  : isHttps
+
+// Number of web proxies in front of Waffle (hosting platforms and reverse proxies
+// that handle HTTPS count as 1). Needed so Waffle sees the real visitor address
+// and knows the connection was HTTPS. 0 = none (your own computer).
+const trustProxy = Number.isInteger(Number(process.env.TRUST_PROXY)) && process.env.TRUST_PROXY?.trim() !== ''
+  ? Number(process.env.TRUST_PROXY)
+  : (isHttps ? 1 : 0)
+
+if (!isHttps && !/^http:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(redirectUri)) {
+  console.warn('[waffle] REDIRECT_URI is plain http on a public address. Use https for anything other than your own computer.')
+}
+
 export const config = {
   token: process.env.DISCORD_TOKEN.trim(),
   clientId: process.env.DISCORD_CLIENT_ID.trim(),
@@ -48,9 +67,10 @@ export const config = {
   // Optional. Only used ONCE, to move templates/vault items saved before
   // Waffle became multi-server into that server. Safe to delete from .env afterwards.
   legacyGuildId: legacyGuildId(),
-  redirectUri: process.env.REDIRECT_URI.trim(),
+  redirectUri,
   sessionSecret: process.env.SESSION_SECRET.trim(),
-  cookieSecure: process.env.COOKIE_SECURE === 'true',
+  cookieSecure,
+  trustProxy,
   allowedOrigins: (process.env.ALLOWED_ORIGINS || 'http://localhost:3003,http://localhost:5173')
     .split(',')
     .map((s) => s.trim())
